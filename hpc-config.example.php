@@ -1,6 +1,6 @@
 <?php
-// Copy to api/config.php on the server (git-ignored). Never commit real values.
-// Ideally keep config.php ABOVE public_html and change the require path in submit-lead.php.
+// Copy to hpc-config.php (git-ignored). Never commit real values.
+// Local: repo root. Live: the hosting HOME folder (above the website folder), so redeploys never touch it.
 return [
   'airtable_token'   => '',            // Personal Access Token (data.records:read/write, this base only)
   'airtable_base_id' => '',            // app...

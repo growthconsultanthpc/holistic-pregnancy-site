@@ -24,7 +24,7 @@ pnpm-debug.log*
 .idea/
 .env.*
 !.env.example
-api/config.php
-api/leads-fallback.log
+hpc-config.php
+public/api/*.log
 *.log
 .vscode/

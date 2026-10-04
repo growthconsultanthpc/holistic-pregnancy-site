@@ -42,7 +42,7 @@ src/
   lib/                  sanity client + queries, seo helpers, utm capture
   client/               CLIENT-ONLY: brand config, copy defaults, fixtures
 studio/                 Sanity Studio + generic schemas
-api/                    PHP: submit-lead.php, adapters/airtable.php, mail/resend.php
+public/api/             PHP: submit-lead.php, adapters/airtable.php, mail/resend.php (deployed inside dist/)
 public/                 images, robots.txt, .htaccess (from reference/.htaccess)
 .github/workflows/      deploy.yml (build+upload), rebuild on repository_dispatch + nightly cron
 ```

@@ -8,7 +8,14 @@ require __DIR__ . '/mail/resend.php';
 
 function out(int $code, array $body): never { http_response_code($code); echo json_encode($body); exit; }
 
-$c = require (getenv('HPC_CONFIG') ?: __DIR__ . '/config.php');
+// Secrets live in hpc-config.php OUTSIDE the deployed web folder so a redeploy never wipes or exposes them.
+// Lookup: $HPC_CONFIG, else the nearest hpc-config.php in a parent folder (repo root locally, hosting home folder live).
+function find_config(): string {
+  if ($p = getenv('HPC_CONFIG')) return $p;
+  for ($d = __DIR__, $i = 0; $i < 8; $i++, $d = dirname($d)) if (is_file("$d/hpc-config.php")) return "$d/hpc-config.php";
+  http_response_code(500); echo json_encode(['ok' => false, 'error' => 'config']); exit;
+}
+$c = require find_config();
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') out(405, ['ok' => false, 'error' => 'method']);
 
 // Origin check. A missing Origin (curl, tests) is only allowed from the local machine.

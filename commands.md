@@ -38,7 +38,7 @@ npm run preview -- --port 5051     # serve dist/ locally
 ```
 PHP is not served by `preview`. To test `api/` locally:
 ```bash
-php -S localhost:8081 -t api       # then POST to http://localhost:8081/submit-lead.php
+php -S localhost:8081 -t public/api       # then POST to http://localhost:8081/submit-lead.php
 ```
 
 ## Check a production-like build
@@ -77,7 +77,7 @@ curl -i -X POST http://localhost:8081/submit-lead.php \
 # expect 200 + {"ok":true}; without consent=1 or email expect 400; same phone twice updates one Airtable record
 ```
 
-Local test options: `HPC_NO_RATELIMIT=1 php -S localhost:8081 -t api` skips the 5-per-10-min limit; `HPC_CONFIG=/path/to/other-config.php` points at a different config (for example a deliberately broken one to test the fallback). Failed Airtable writes are kept in `api/leads-fallback.log` (git-ignored, denied over HTTP).
+Local test options: `HPC_NO_RATELIMIT=1 php -S localhost:8081 -t public/api` skips the 5-per-10-min limit; `HPC_CONFIG=/path/to/other-config.php` points at a different config (for example a deliberately broken one to test the fallback). Failed Airtable writes are kept in `public/api/leads-fallback.log` (git-ignored, denied over HTTP).
 
 ## Deploy
 Production deploys are done by GitHub Actions on push to `main`, on Sanity publish, and nightly. Manual triggers:
