@@ -10,6 +10,14 @@ node -v   # use the version pinned in .nvmrc (set at setup)
 npm -v
 ```
 
+## Git
+Repo: `https://github.com/hariseldon84/holistic-pregnancy-site` (private). Commits use the GitHub noreply identity set locally for this repo.
+```bash
+git status
+git add -A && git commit -m "message"
+git push                      # origin/main
+```
+
 ## Install
 ```bash
 npm install

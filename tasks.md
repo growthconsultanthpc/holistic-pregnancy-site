@@ -3,7 +3,7 @@
 Legend: `[ ]` todo · `[~]` in progress · `[!]` blocked (needs input, see PRD §11). `G#` = `docs/decision_log.md`. Detail lives in `docs/PRD.md`.
 
 ## Setup
-- [~] Resend + Sanity accounts exist; dummy Gmail + private GitHub repo + first push pending. Create dedicated dummy Gmail (own recovery+2FA); private GitHub repo; Sanity + Resend accounts (G22)
+- [~] Resend + Sanity accounts exist; private repo created on `hariseldon84/holistic-pregnancy-site` and first push done (move to the client's GitHub later, G22); dummy Gmail still pending. Create dedicated dummy Gmail (own recovery+2FA); private GitHub repo; Sanity + Resend accounts (G22)
 - [~] Airtable base built; verify field/option names against `docs/airtable_prompt.md`; create scoped token (G13, G23)
 - [~] Prettier/ESLint; pin Node (`.nvmrc`)
 - [ ] Image pipeline: `<img>` + srcset from `reference/` assets (G10)
@@ -96,6 +96,7 @@ Legend: `[ ]` todo · `[~]` in progress · `[!]` blocked (needs input, see PRD �
 - [ ] [!] Reconfirm slide timeline vs scope
 
 ## Done
+- [x] Private GitHub repo `hariseldon84/holistic-pregnancy-site` created; initial commit pushed (86 files, secrets scan clean, commit identity = GitHub noreply)
 - [x] SEO basics: sitemap, robots, Organization schema, noindex on utility pages (G36); verified on a production-mode build
 - [x] All inner pages built (G35): programmes ×4, About, Community, Get in touch, free-session, enrol ×4, thank-you ×3, legal ×4, 404, blog. Lighthouse mobile (prod): perf 98-100, a11y 100, bp 100 on every page checked
 - [x] Homepage built from Sanity: hero, trust bar, programmes + chooser, How it works, founder, testimonials (gated), free-session form, FAQ, footer, sticky mobile CTA; thank-you pages. Lighthouse mobile (prod build): perf 98, a11y 100, best-practices 100, LCP 2.3s, CLS 0 (G34). Form tested end to end (page → Airtable → thank-you)
