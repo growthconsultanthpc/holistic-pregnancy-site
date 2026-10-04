@@ -1,0 +1,21 @@
+@import 'tailwindcss';
+@import '../tokens/tokens.css';
+@import './site.css';
+@import '@fontsource-variable/playfair-display';
+@import '@fontsource-variable/montserrat';
+@import '@fontsource/caveat/500.css';
+
+@theme inline {
+  --color-bg: var(--bg); --color-blush: var(--blush); --color-card: var(--card);
+  --color-ink: var(--ink); --color-text: var(--text); --color-muted: var(--muted); --color-line: var(--line);
+  --color-coral: var(--coral); --color-cta: var(--cta); --color-ctad: var(--ctaD);
+  --color-soft: var(--soft); --color-blue: var(--blue);
+  --color-sage: var(--sage); --color-sageink: var(--sageInk); --color-pink: var(--pink); --color-pinkink: var(--pinkInk);
+  --font-display: var(--font-display); --font-body: var(--font-body); --font-script: var(--font-script);
+}
+
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 400 16px/1.6 var(--font-body); }
+h1, h2, h3 { font-family: var(--font-display); color: var(--ink); font-weight: 600; line-height: 1.15; margin: 0; text-wrap: balance; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { *, ::before, ::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }

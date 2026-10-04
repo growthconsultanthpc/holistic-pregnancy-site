@@ -1,0 +1,6 @@
+# Never serve config, logs or internals over HTTP.
+<FilesMatch "(^config.*\.php$|\.log$)">
+  Require all denied
+</FilesMatch>
+RewriteEngine On
+RewriteRule ^(adapters|mail)/ - [F,L]

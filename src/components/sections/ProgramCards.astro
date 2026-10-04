@@ -1,0 +1,51 @@
+---
+import Steps from './Steps.astro'
+import { pic } from '../../lib/sanity'
+const { page, programs } = Astro.props
+---
+<section id="programs">
+  <div class="w">
+    <div class="t reveal"><h2>{page.programmesHeading}</h2><p>{page.programmesIntro}</p></div>
+    <div class="chooser reveal" role="group" aria-label="Find the right program">
+      <span class="chq">{page.chooserQuestion}</span>
+      {page.chooser?.map((c: any) => <button type="button" class="chip" data-pick={(c.slugs ?? []).join(',')} aria-pressed="false">{c.label}</button>)}
+      <a class="chip" href="/contact/">{page.notSureLabel}</a>
+    </div>
+    <div class="progs">
+      {programs.map((p: any, i: number) => {
+        const im = pic(p.cardImage, [320, 480], '(max-width: 600px) 80vw, (max-width: 1020px) 45vw, 25vw')
+        return (
+          <article class="prog reveal" style={`--i:${i}`} data-p={p.slug}>
+            {im && <img class="im" src={im.src} srcset={im.srcset} sizes={im.sizes} alt={im.alt} width={im.width} height={im.height} loading="lazy" decoding="async" />}
+            <div class="bd">
+              <span class="tag" data-base={p.tag}>{p.tag}</span>
+              <h3>{p.title}</h3>
+              <div class="price"><b>₹{p.price?.toLocaleString('en-IN')}</b><span>{p.meta}</span></div>
+              <ul class="ck">{p.cardBullets?.map((b: string) => <li>{b}</li>)}</ul>
+              <a class="btn btn-p" href={`/${p.slug}/`}>View Program</a>
+            </div>
+          </article>
+        )
+      })}
+    </div>
+    <Steps steps={page.steps} />
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.chip[data-pick]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const on = b.getAttribute('aria-pressed') === 'true'
+      document.querySelectorAll('.chip[data-pick]').forEach((x) => x.setAttribute('aria-pressed', 'false'))
+      const picks = on ? [] : b.dataset.pick!.split(',')
+      if (!on) b.setAttribute('aria-pressed', 'true')
+      document.querySelectorAll<HTMLElement>('.prog').forEach((c) => {
+        const r = picks.includes(c.dataset.p!), t = c.querySelector<HTMLElement>('.tag')!
+        c.classList.toggle('rec', r)
+        t.textContent = r ? 'Recommended for you' : t.dataset.base || ''
+      })
+      const rec = document.querySelector<HTMLElement>('.prog.rec'), list = document.querySelector<HTMLElement>('.progs')
+      if (rec && list && innerWidth <= 860) list.scrollTo({ left: rec.offsetLeft - 16, behavior: 'smooth' })
+    })
+  })
+</script>

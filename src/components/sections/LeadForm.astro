@@ -1,0 +1,63 @@
+---
+// Generic lead form: posts to the PHP endpoint (Airtable + Resend). Stage options are code-locked (G18).
+const STAGES = ['Planning a pregnancy', 'Currently pregnant', 'Not sure yet']
+const CALL_TIMES = ['Morning', 'Afternoon', 'Evening']
+interface Props { type: 'Free session' | 'Enrol' | 'Contact'; button: string; note?: string; redirect: string; programme?: string; extended?: boolean }
+const { type, button, note, redirect, programme = '', extended = false } = Astro.props
+const endpoint = import.meta.env.PUBLIC_LEAD_ENDPOINT
+---
+<form class="form" data-lead-form data-endpoint={endpoint} data-redirect={redirect} novalidate>
+  <input type="hidden" name="type" value={type} />
+  <input type="hidden" name="programme" value={programme} />
+  <input type="hidden" name="utm_source" /><input type="hidden" name="utm_medium" /><input type="hidden" name="utm_campaign" /><input type="hidden" name="landing_page" />
+  <div class="hp" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off" /></label></div>
+  <label>Name<input name="name" required autocomplete="name" placeholder="Your name" /></label>
+  <label>Phone / WhatsApp<input name="phone" type="tel" required autocomplete="tel" inputmode="tel" placeholder="+91" /></label>
+  <label class="f">Email<input name="email" type="email" required autocomplete="email" placeholder="you@example.com" /></label>
+  <label class="f">Stage
+    <select name="stage" required><option value="">Select your stage</option>{STAGES.map((s) => <option>{s}</option>)}</select>
+  </label>
+  {extended && <label class="f">Question (optional)<textarea name="question" rows="3" placeholder="Your question"></textarea></label>}
+  {extended && <label class="f">Preferred call time (optional)<select name="call_time"><option value="">Select</option>{CALL_TIMES.map((s) => <option>{s}</option>)}</select></label>}
+  <label class="f cons"><input type="checkbox" name="consent" value="1" required /> <span>I agree to be contacted by phone, WhatsApp and email about my request, and to the <a href="/privacy/" target="_blank">Privacy Policy</a>.</span></label>
+  <p class="err f" role="alert" data-err></p>
+  <button class="btn btn-p f" type="submit">{button}</button>
+  {note && <p class="note f">{note}</p>}
+</form>
+
+<script>
+  // First-touch attribution survives navigation within the session
+  const KEY = 'hpc_attr'
+  function attribution() {
+    let a: Record<string, string> = {}
+    try { a = JSON.parse(sessionStorage.getItem(KEY) || '{}') } catch {}
+    if (!a.landing_page) {
+      const p = new URLSearchParams(location.search)
+      a = { utm_source: p.get('utm_source') || (document.referrer ? new URL(document.referrer).hostname : ''), utm_medium: p.get('utm_medium') || '', utm_campaign: p.get('utm_campaign') || '', landing_page: location.pathname }
+      try { sessionStorage.setItem(KEY, JSON.stringify(a)) } catch {}
+    }
+    return a
+  }
+  const MSG: Record<string, string> = { name: 'your name', phone: 'a valid phone number', email: 'a valid email', stage: 'your stage', consent: 'your consent' }
+  document.querySelectorAll<HTMLFormElement>('form[data-lead-form]').forEach((f) => {
+    f.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const err = f.querySelector<HTMLElement>('[data-err]')!, btn = f.querySelector<HTMLButtonElement>('button[type=submit]')!
+      err.textContent = ''
+      if (!f.checkValidity()) { f.reportValidity(); return }
+      const a = attribution()
+      for (const [k, v] of Object.entries(a)) { const i = f.elements.namedItem(k) as HTMLInputElement | null; if (i) i.value = v }
+      const label = btn.textContent
+      btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Sending…'
+      try {
+        const res = await fetch(f.dataset.endpoint!, { method: 'POST', body: new FormData(f) })
+        const j = await res.json().catch(() => ({}))
+        if (res.ok && j.ok) { location.href = f.dataset.redirect!; return }
+        err.textContent = j.fields ? 'Please check ' + j.fields.map((x: string) => MSG[x] || x).join(', ') + '.' : res.status === 429 ? 'Too many tries. Please wait a few minutes.' : 'Something went wrong. Please try again, or message us on WhatsApp.'
+      } catch {
+        err.textContent = 'We could not reach the server. Please try again, or message us on WhatsApp.'
+      }
+      btn.disabled = false; btn.textContent = label
+    })
+  })
+</script>

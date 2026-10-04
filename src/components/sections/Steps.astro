@@ -1,0 +1,4 @@
+---
+const { steps = [] } = Astro.props
+---
+<div class="how" aria-label="How it works">{steps.slice(0, 4).map((s: string, i: number) => <span><i>{i + 1}</i>{s}</span>)}</div>

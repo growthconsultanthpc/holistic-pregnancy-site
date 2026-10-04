@@ -1,0 +1,19 @@
+---
+import Icon from '../ui/Icon.astro'
+import { pic } from '../../lib/sanity'
+const { page } = Astro.props
+const img = pic(page.founderImage, [240, 360, 480], '(max-width: 860px) 120px, 320px')
+const icons = [['mind', ''], ['leaf', ''], ['lotus', ''], ['heart', 'pk']]
+---
+<section id="about">
+  <div class="w fdr">
+    {img && <img class="fph reveal" src={img.src} srcset={img.srcset} sizes={img.sizes} alt={img.alt} width={img.width} height={img.height} loading="lazy" decoding="async" />}
+    <div class="reveal" style="--i:1">
+      <h2>{page.founderHeading}</h2>
+      <p class="fp">{page.founderBody}</p>
+      <div class="four">{(page.founderPoints ?? []).slice(0, 4).map((p: string, i: number) => <div><span class={`ci ${icons[i][1]}`}><Icon name={icons[i][0]} /></span>{p}</div>)}</div>
+      <a class="btn btn-p" href="/about/">{page.founderButton}</a>
+      <div class="sign">{page.founderSignature}</div>
+    </div>
+  </div>
+</section>

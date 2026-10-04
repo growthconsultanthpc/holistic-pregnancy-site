@@ -1,0 +1,25 @@
+---
+import Site from '../../layouts/Site.astro'
+import LeadForm from '../../components/sections/LeadForm.astro'
+import FAQ from '../../components/sections/FAQ.astro'
+import { getSite, q, wa, faqLd } from '../../lib/sanity'
+const { settings } = await getSite()
+const c = await q(`*[_id=="contactPage"][0]{..., faqs[]->{question, answer}}`)
+const tel = settings.phone?.replace(/[^\d+]/g, '')
+---
+<Site title={c.seo?.title ?? `Get in touch | ${settings.businessName}`} description={c.seo?.description ?? c.lead} jsonld={[faqLd(c.faqs)].filter(Boolean) as object[]}>
+  <div class="hero2">
+    <div class="w">
+      <div class="hero-copy"><h1>{c.headline}</h1><p class="lead">{c.lead}</p></div>
+      <div class="reveal"><LeadForm type="Contact" extended button={c.formButton} note={c.formNote} redirect="/contact/thank-you/" /></div>
+    </div>
+  </div>
+  <section class="sx band"><div class="w"><div class="t reveal"><h2>{c.directHeading}</h2></div>
+    <div class="strip center reveal">
+      <a href={wa(settings)} target="_blank" rel="noopener">WhatsApp us</a>
+      {tel && <a href={`tel:${tel}`}>Call: {settings.phone}</a>}
+      {settings.email && <a href={`mailto:${settings.email}`}>Email: {settings.email}</a>}
+      <a href={settings.calendlyUrl} target="_blank" rel="noopener">Book a Free Call</a>
+    </div></div></section>
+  <FAQ heading={c.faqHeading} items={c.faqs} />
+</Site>

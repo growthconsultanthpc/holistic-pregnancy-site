@@ -1,0 +1,7 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {"name": "site", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev", "--", "--port", "4321"], "port": 4321},
+    {"name": "api", "runtimeExecutable": "php", "runtimeArgs": ["-S", "localhost:8081", "-t", "api"], "port": 8081}
+  ]
+}

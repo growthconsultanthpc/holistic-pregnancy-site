@@ -1,0 +1,18 @@
+---
+import Icon from '../ui/Icon.astro'
+import LeadForm from './LeadForm.astro'
+import { sessionLabel } from '../../lib/sanity'
+const { page, session } = Astro.props
+const live = sessionLabel(session)
+const icons = [['mind', ''], ['leaf', ''], ['heart', 'pk']]
+---
+<section id="free" class="band">
+  <div class="w free">
+    <div class="reveal">
+      <h2>{page.freeHeading}</h2>
+      <ul>{(page.freeBullets ?? []).slice(0, 3).map((b: string, i: number) => <li><span class={`ci ${icons[i][1]}`}><Icon name={icons[i][0]} /></span>{b}</li>)}</ul>
+      <span class="date" data-starts={live?.startsAt} data-fallback={session?.fallbackText}>{live ? `${live.text}${live.extra ? ` · ${live.extra}` : ''}` : session?.fallbackText}</span>
+    </div>
+    <div class="reveal" style="--i:1"><LeadForm type="Free session" button={page.freeButton} note={page.freeNote} redirect="/free-session/thank-you/" /></div>
+  </div>
+</section>

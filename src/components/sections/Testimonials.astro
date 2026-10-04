@@ -1,0 +1,22 @@
+---
+// Hidden unless 3+ real testimonials are published (G25). Placeholders only count on staging.
+const { items = [], heading = 'Real journeys' } = Astro.props
+---
+{items.length >= 3 && (
+  <section>
+    <div class="w">
+      <div class="t reveal"><h2>{heading}</h2></div>
+      <div class="quotes">
+        {items.map((t: any, i: number) => (
+          <div class="q reveal" style={`--i:${i}`}>
+            <div class="m" aria-hidden="true">“</div>
+            <p>{t.quote}</p>
+            <b>{t.name}</b>
+            {t.stage && <small>{t.stage}</small>}
+            {t.videoUrl && <p><a href={t.videoUrl} target="_blank" rel="noopener">Watch the video</a></p>}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}

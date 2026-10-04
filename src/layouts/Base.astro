@@ -1,0 +1,53 @@
+---
+import '../styles/global.css'
+import playfair from '@fontsource-variable/playfair-display/files/playfair-display-latin-wght-normal.woff2?url'
+import montserrat from '@fontsource-variable/montserrat/files/montserrat-latin-wght-normal.woff2?url'
+interface Props { title: string; description?: string; noindex?: boolean; image?: string; jsonld?: object[] }
+const { title, description = '', noindex = import.meta.env.PUBLIC_NOINDEX !== 'false', image, jsonld = [] } = Astro.props
+const canonical = new URL(Astro.url.pathname, Astro.site).href
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    {image && <meta property="og:image" content={image} />}
+    <meta property="og:type" content="website" />
+    {jsonld.map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href={montserrat} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={playfair} as="font" type="font/woff2" crossorigin />
+    <link rel="preconnect" href="https://cdn.sanity.io" crossorigin />
+    <script is:inline>
+      // Reveal-hiding only applies when JS runs and the visitor has not asked for reduced motion (G29).
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('js-reveal')
+    </script>
+  </head>
+  <body>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <symbol id="heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></symbol>
+        <symbol id="leaf" viewBox="0 0 24 24"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14"/><path d="M5 19c3-5 6-7 9-8"/></symbol>
+        <symbol id="lotus" viewBox="0 0 24 24"><path d="M12 5c3 3 3 9 0 13-3-4-3-10 0-13z"/><path d="M4 10c4 0 7 3 8 8M20 10c-4 0-7 3-8 8"/></symbol>
+        <symbol id="mind" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></symbol>
+      </defs>
+    </svg>
+    <slot />
+    <script is:inline>
+      // one-shot scroll reveal
+      (function () {
+        var els = document.querySelectorAll('.reveal')
+        if (!els.length) return
+        if (!('IntersectionObserver' in window)) { els.forEach(function (e) { e.classList.add('in') }); return }
+        var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target) } }) }, { rootMargin: '0px 0px -8% 0px' })
+        els.forEach(function (e) { io.observe(e) })
+      })()
+    </script>
+  </body>
+</html>

@@ -1,0 +1,104 @@
+---
+import Base from './Base.astro'
+import Icon from '../components/ui/Icon.astro'
+import { getSite, pic, sessionLabel, wa, blogOn } from '../lib/sanity'
+
+interface Props { title: string; description?: string; image?: string; bar?: boolean; minimal?: boolean; enroll?: { slug: string; price: number }; jsonld?: object[]; noindex?: boolean }
+const { title, description, image, bar = true, minimal = false, enroll, jsonld, noindex } = Astro.props
+const { settings: s, session, programs, postCount } = await getSite()
+const live = sessionLabel(session)
+const logo = pic(s.logo, [143, 286], '143px')
+const year = new Date().getFullYear()
+const origin = Astro.site!.origin
+const logoUrl = pic(s.logo, [512], '512px')?.src
+const org = {
+  '@context': 'https://schema.org', '@type': 'Organization', name: s.businessName, url: origin, description: s.tagline,
+  ...(logoUrl && { logo: logoUrl }),
+  sameAs: [s.instagramUrl, s.facebookUrl, s.threadsUrl].filter(Boolean),
+  ...((s.phone || s.email) && { contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', availableLanguage: ['en'], ...(s.phone && { telephone: s.phone }), ...(s.email && { email: s.email }) } }),
+}
+// Programme pages swap the call button for Enroll (as in the original design); the landing page hides navigation.
+const cta = enroll ? { href: `/enroll/${enroll.slug}/`, label: `Enroll Now · ₹${enroll.price.toLocaleString('en-IN')}`, ext: false } : { href: s.calendlyUrl, label: 'Book a Free Call', ext: true }
+const socials = [['Instagram', s.instagramUrl], ['Facebook', s.facebookUrl], ['Threads', s.threadsUrl], ['WhatsApp', s.whatsappNumber && wa(s, '')]].filter(([, u]) => u)
+const aboutLinks = [['Our Story', '/about/'], ['Community', '/community/'], ['Get in Touch', '/contact/']]
+if (blogOn(s, postCount)) aboutLinks.push(['Blog', '/blog/'])
+else if (s.externalBlogUrl) aboutLinks.push(['Blog', s.externalBlogUrl])
+const legal = [['Privacy Policy', '/privacy/'], ['Terms', '/terms/'], ['Refund Policy', '/refund/'], ['Medical Disclaimer', '/medical-disclaimer/']]
+---
+<Base title={title} description={description || s.tagline} image={image} jsonld={[org, ...(jsonld ?? [])]} noindex={noindex}>
+  {bar && !minimal && s.barEnabled && (
+    <div class="bar">
+      {live && s.barShowDate ? `Free online session on ${live.text}.` : s.barText}
+      <a href="/free-session/">{s.barLinkLabel}</a>
+    </div>
+  )}
+  <header class="hdr">
+    <div class="nav">
+      <a href="/" aria-label={`${s.businessName} home`}>
+        {logo && <img class="logo-img" src={logo.src} srcset={logo.srcset} sizes={logo.sizes} alt={s.businessName} width="143" height="56" />}
+      </a>
+      {!minimal && <nav class="menu" aria-label="Main">
+        <a href="/">Home</a>
+        <span class="dd">
+          <button type="button" class="dd-t" aria-expanded="false" aria-haspopup="true">Programs <span aria-hidden="true">▾</span></button>
+          <span class="dd-list">{programs.map((p: any) => <a href={`/${p.slug}/`}>{p.title}</a>)}</span>
+        </span>
+        <a href="/about/">About</a>
+        <a href="/community/">Community</a>
+        <a href="/contact/">Contact</a>
+      </nav>}
+      {!minimal && <a class="btn btn-p nav-cta" href={cta.href} {...(cta.ext ? {target: '_blank', rel: 'noopener'} : {})}>{cta.label}</a>}
+    </div>
+  </header>
+
+  <main id="top"><slot /></main>
+
+  <footer class="ftr">
+    <div class="w">
+      <div class="fg">
+        <div>
+          {logo && <img class="logo-img" src={logo.src} srcset={logo.srcset} sizes={logo.sizes} alt={s.businessName} width="143" height="56" loading="lazy" />}
+          <p style="color:var(--muted);margin:10px 0 0">{s.tagline}</p>
+        </div>
+        <div><h3>Programs</h3>{programs.map((p: any) => <a href={`/${p.slug}/`}>{p.title}</a>)}</div>
+        <div><h3>About</h3>{aboutLinks.map(([l, u]) => <a href={u} {...(u.startsWith('http') ? {target: '_blank', rel: 'noopener'} : {})}>{l}</a>)}</div>
+        <div><h3>Follow</h3>{socials.map(([l, u]) => <a href={u} target="_blank" rel="noopener">{l}</a>)}</div>
+      </div>
+      <div class="copy">
+        {legal.map(([l, u], i) => <><a href={u}>{l}</a>{i < legal.length - 1 && ' · '}</>)}<br />
+        © {year} {s.legalEntity}. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  {!minimal && <div class="mcta" id="mcta">
+    <a class="a1" href={cta.href} {...(cta.ext ? {target: '_blank', rel: 'noopener'} : {})}>{cta.label}</a>
+    <a class="a2" href={wa(s)} target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11.5a8 8 0 0 1-11.9 7L4 20l1.5-4A8 8 0 1 1 20 11.5z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-.8.8c-1-.4-1.8-1.2-2.2-2.2l.8-.8-1-2z"/></svg>
+    </a>
+  </div>}
+</Base>
+
+<script>
+  // Programs dropdown
+  const dd = document.querySelector('.dd'), t = dd?.querySelector('.dd-t')
+  if (dd && t) {
+    const set = (o: boolean) => { dd.classList.toggle('open', o); t.setAttribute('aria-expanded', String(o)) }
+    t.addEventListener('click', (e) => { e.stopPropagation(); set(!dd.classList.contains('open')) })
+    document.addEventListener('click', (e) => { if (!dd.contains(e.target as Node)) set(false) })
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') set(false) })
+  }
+  // Sticky mobile CTA: after 420px, hidden while a form or the footer is on screen
+  const m = document.getElementById('mcta')
+  const mc = () => {
+    if (!m) return
+    let hide = false
+    document.querySelectorAll('main form, footer').forEach((e) => { const r = e.getBoundingClientRect(); if (r.top < innerHeight && r.bottom > 0) hide = true })
+    m.classList.toggle('show', scrollY > 420 && !hide)
+  }
+  addEventListener('scroll', mc, { passive: true }); addEventListener('resize', mc); mc()
+  // Session date: revert to fallback text if the date passes while the page is open (G15)
+  document.querySelectorAll<HTMLElement>('[data-starts]').forEach((el) => {
+    if (new Date(el.dataset.starts!) <= new Date()) { el.textContent = el.dataset.fallback || ''; }
+  })
+</script>

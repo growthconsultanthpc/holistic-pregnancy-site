@@ -1,0 +1,26 @@
+---
+import Site from '../layouts/Site.astro'
+import { getSite, pic, q } from '../lib/sanity'
+const { settings } = await getSite()
+const a = await q(`*[_id=="aboutPage"][0]`)
+const img = pic(a.image, [240, 360, 480], '(max-width: 860px) 200px, 360px')
+---
+<Site title={a.seo?.title ?? `Our Story | ${settings.businessName}`} description={a.seo?.description ?? a.lead}>
+  <div class="hero2">
+    <div class="w">
+      <div class="hero-copy">
+        <h1>{a.headline}</h1>
+        <p class="lead">{a.lead}</p>
+        <p style="font:italic 500 20px var(--font-display);color:var(--blue);margin:-6px 0 20px">{a.signature}</p>
+        <a class="btn btn-p" href="/#programs">Explore Programs</a>
+      </div>
+      {img && <img class="fph" style="margin:0 auto" src={img.src} srcset={img.srcset} sizes={img.sizes} alt={img.alt} width={img.width} height={img.height} fetchpriority="high" />}
+    </div>
+  </div>
+  <section class="sx"><div class="w"><div class="t reveal"><h2>{a.storyHeading}</h2></div><p class="prose reveal">{a.story}</p></div></section>
+  <section class="sx band"><div class="w"><div class="t reveal"><h2>{a.approachHeading}</h2></div>
+    <div class="grid g3">{a.approach?.map((c: any, i: number) => <div class="cd mid reveal" style={`--i:${i}`}><h3>{c.title}</h3><p>{c.text}</p></div>)}</div></div></section>
+  <section class="sx"><div class="w"><div class="t reveal"><h2>{a.promiseHeading}</h2></div>
+    <div class="grid g4">{a.promise?.map((c: any, i: number) => <div class="cd mid reveal" style={`--i:${i}`}><h3>{c.title}</h3></div>)}</div></div></section>
+  <section class="sx band"><div class="w" style="text-align:center"><h2 class="reveal" style="font-size:clamp(24px,3.4vw,32px);margin-bottom:18px">{a.closingHeading}</h2><a class="btn btn-p reveal" href="/#programs">Explore Programs</a></div></section>
+</Site>

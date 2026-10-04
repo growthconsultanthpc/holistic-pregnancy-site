@@ -1,0 +1,34 @@
+/* ALL brand values live here (and in Sanity). Source: docs/design_specification.md §1-3.
+   Components must use these tokens, never raw hex/font names. */
+:root {
+  --bg: #fdfcfa; --blush: #f5f2ec; --card: #ffffff;
+  --ink: #12264a; --text: #3b4455; --muted: #636d7d; /* design had #667080 (4.48:1 on blush, below AA); darkened minimally, G34 */ --line: #e7e2d9;
+  --coral: #cf5b52; --cta: #bd4a42; --ctaD: #a83d36;
+  --soft: #eaf0e7; --blue: #2b5c9e;
+  --sage: #e1e9dd; --sageInk: #587561; --pink: #f8e4e4; --pinkInk: #c25d66;
+  --wa: #1f7a4a; --error: #c0392b;
+  /* coral at small sizes fails AA (3.9:1): use --accent-text for text under ~18px (G27) */
+  --accent-text: var(--cta);
+
+  --font-display: 'Playfair Display Variable', Georgia, serif;
+  --font-body: 'Montserrat Variable', system-ui, sans-serif;
+  --font-script: 'Caveat', cursive;
+
+  --radius-pill: 999px; --radius-xl: 24px; --radius-lg: 18px; --radius-md: 16px; --radius-sm: 12px; --radius-xs: 8px;
+  --container: 1120px;
+  --ease: cubic-bezier(.22, .61, .36, 1); --dur: 500ms;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #14142e; --blush: #1b1b3b; --card: #20203f;
+    --ink: #f3efff; --text: #e3e1ef; --muted: #aaa8c2; --line: #37375c;
+    --soft: #1f2a3a; --blue: #8db4ee;
+    --sage: #2b3a33; --sageInk: #a9c9b0; --pink: #3d2b3a; --pinkInk: #f0a3aa;
+  }
+}
+:root[data-theme='dark'] {
+  --bg: #14142e; --blush: #1b1b3b; --card: #20203f;
+  --ink: #f3efff; --text: #e3e1ef; --muted: #aaa8c2; --line: #37375c;
+  --soft: #1f2a3a; --blue: #8db4ee;
+  --sage: #2b3a33; --sageInk: #a9c9b0; --pink: #3d2b3a; --pinkInk: #f0a3aa;
+}

@@ -1,0 +1,23 @@
+---
+// One route for the four programme pages and the four legal pages (both are fixed pages with a slug).
+import ProgramPage from '../components/sections/ProgramPage.astro'
+import LegalPage from '../components/sections/LegalPage.astro'
+import { q, showPlaceholders } from '../lib/sanity'
+
+export async function getStaticPaths() {
+  const { programs, legal } = await q(`{
+    "programs": *[_type=="program"]{..., "slug": slug.current, faqs[]->{question, answer}},
+    "legal": *[_type=="legalPage"]{title, slug, body, lastUpdated, status, seo}
+  }`)
+  // Launch gate (G24): a production build (placeholders off) refuses to run while any legal page is still a draft.
+  const drafts = legal.filter((l: any) => l.status !== 'approved')
+  if (!showPlaceholders && drafts.length && process.env.ALLOW_DRAFT_LEGAL !== 'true')
+    throw new Error(`LAUNCH GATE: legal page(s) still Draft: ${drafts.map((d: any) => d.slug).join(', ')}. Approve them in Sanity, or set ALLOW_DRAFT_LEGAL=true for a non-live test build.`)
+  return [
+    ...programs.map((p: any) => ({ params: { slug: p.slug }, props: { kind: 'program', data: p } })),
+    ...legal.map((l: any) => ({ params: { slug: l.slug }, props: { kind: 'legal', data: l } })),
+  ]
+}
+const { kind, data } = Astro.props
+---
+{kind === 'program' ? <ProgramPage p={data} /> : <LegalPage page={data} />}

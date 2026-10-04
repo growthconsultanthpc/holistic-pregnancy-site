@@ -1,0 +1,56 @@
+---
+// Blog index + posts. With "Show blog on the website" OFF in Sanity this builds NO routes (G17).
+// Dummy posts (isPlaceholder) build on staging only.
+import Site from '../../layouts/Site.astro'
+import { getSite, pic, q, showPlaceholders, blogOn } from '../../lib/sanity'
+import { renderPT } from '../../lib/pt'
+
+export async function getStaticPaths() {
+  const { settings, postCount } = await getSite()
+  if (!blogOn(settings, postCount)) return []
+  const posts = await q(`*[_type=="post" && (isPlaceholder != true || $ph)]|order(publishedAt desc){
+    title, "slug": slug.current, publishedAt, excerpt, coverImage, body, seo, isPlaceholder,
+    "author": author->{name, role}, "categories": categories[]->title}`, { ph: showPlaceholders })
+  return [
+    { params: { slug: undefined }, props: { posts, post: null } },
+    ...posts.map((post: any) => ({ params: { slug: post.slug }, props: { posts, post } })),
+  ]
+}
+const { posts, post } = Astro.props
+const { settings } = await getSite()
+const when = (d: string) => new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
+const cover = post && pic(post.coverImage, [480, 800, 1200], '(max-width: 800px) 100vw, 760px')
+const ld = post ? [{ '@context': 'https://schema.org', '@type': 'Article', headline: post.title, datePublished: post.publishedAt, author: { '@type': 'Person', name: post.author?.name }, description: post.excerpt }] : []
+---
+<Site title={post ? (post.seo?.title ?? `${post.title} | ${settings.businessName}`) : `Blog | ${settings.businessName}`} description={post ? (post.seo?.description ?? post.excerpt) : 'Articles on preconception, pregnancy and postpartum wellbeing.'} jsonld={ld}>
+  {post ? (
+    <section>
+      <div class="w legal">
+        <a class="co-back" href="/blog/">← All articles</a>
+        <p class="sx-k">{post.categories?.join(' · ')}</p>
+        <h1>{post.title}</h1>
+        <p style="color:var(--muted);font-size:14px">{when(post.publishedAt)}{post.author && ` · ${post.author.name}`}</p>
+        {post.isPlaceholder && <p class="draftflag"><b>Dummy post.</b> Shown on staging only.</p>}
+        {cover && <img class="cover" src={cover.src} srcset={cover.srcset} sizes={cover.sizes} alt={cover.alt} width={cover.width} height={cover.height} />}
+        <div class="richtext" set:html={renderPT(post.body)} />
+      </div>
+    </section>
+  ) : (
+    <section>
+      <div class="w">
+        <div class="t reveal"><h2>Blog</h2><p>Articles on preconception, pregnancy and postpartum wellbeing.</p></div>
+        <div class="posts">
+          {posts.map((p: any, i: number) => {
+            const im = pic(p.coverImage, [320, 480, 640], '(max-width: 600px) 100vw, 33vw')
+            return (
+              <a class="post reveal" style={`--i:${i}`} href={`/blog/${p.slug}/`}>
+                {im && <img class="im" src={im.src} srcset={im.srcset} sizes={im.sizes} alt={im.alt} width={im.width} height={im.height} loading="lazy" />}
+                <div class="bd"><small>{p.categories?.join(' · ')}</small><h2>{p.title}</h2><p>{p.excerpt}</p></div>
+              </a>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )}
+</Site>

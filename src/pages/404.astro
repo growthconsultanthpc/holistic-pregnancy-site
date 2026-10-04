@@ -1,0 +1,13 @@
+---
+import Site from '../layouts/Site.astro'
+import { getSite } from '../lib/sanity'
+const { settings, programs } = await getSite()
+---
+<Site title={`Page not found | ${settings.businessName}`} bar={false} noindex>
+  <section class="nf"><div class="w">
+    <svg class="lotus" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c3 3 3 9 0 13-3-4-3-10 0-13z" /><path d="M4 10c4 0 7 3 8 8" /><path d="M20 10c-4 0-7 3-8 8" /></svg>
+    <h1>{settings.notFoundHeading}</h1><p>{settings.notFoundText}</p>
+    <div class="strip center" style="margin:18px 0 22px">{programs.map((p: any) => <a href={`/${p.slug}/`}>{p.title}</a>)}</div>
+    <a class="btn btn-p" href="/">Back to home</a>
+  </div></section>
+</Site>

@@ -1,0 +1,11 @@
+---
+const { heading, items = [] } = Astro.props
+---
+{items.length > 0 && (
+  <section id="faq">
+    <div class="w">
+      <div class="t reveal"><h2>{heading}</h2></div>
+      <div class="faq">{items.map((f: any, i: number) => <details open={i === 0}><summary>{f.question}</summary><p>{f.answer}</p></details>)}</div>
+    </div>
+  </section>
+)}

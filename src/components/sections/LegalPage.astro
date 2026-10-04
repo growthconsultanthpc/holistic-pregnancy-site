@@ -1,0 +1,18 @@
+---
+import Site from '../../layouts/Site.astro'
+import { getSite, showPlaceholders } from '../../lib/sanity'
+import { renderPT } from '../../lib/pt'
+const { page } = Astro.props
+const { settings } = await getSite()
+const updated = new Date(page.lastUpdated).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
+---
+<Site title={page.seo?.title ?? `${page.title} | ${settings.businessName}`} description={page.seo?.description} bar={false}>
+  <section>
+    <div class="w legal">
+      <h1>{page.title}</h1>
+      <p style="color:var(--muted);font-size:14px">Last updated {updated}</p>
+      {page.status !== 'approved' && showPlaceholders && <p class="draftflag"><b>Draft.</b> Not yet approved by the client. The live site cannot be published while this is a draft.</p>}
+      <div class="richtext" set:html={renderPT(page.body)} />
+    </div>
+  </section>
+</Site>

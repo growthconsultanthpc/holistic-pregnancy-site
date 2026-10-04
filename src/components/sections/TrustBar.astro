@@ -1,0 +1,4 @@
+---
+const { items = [] } = Astro.props
+---
+<div class="trustbar"><div class="w">{items.map((i: string) => <span>{i}</span>)}</div></div>

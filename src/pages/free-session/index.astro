@@ -1,0 +1,30 @@
+---
+import Site from '../../layouts/Site.astro'
+import LeadForm from '../../components/sections/LeadForm.astro'
+import FAQ from '../../components/sections/FAQ.astro'
+import { getSite, pic, q, sessionLabel, faqLd } from '../../lib/sanity'
+const { settings, session } = await getSite()
+const f = await q(`*[_id=="freeSessionPage"][0]{..., faqs[]->{question, answer}}`)
+const live = sessionLabel(session)
+const img = pic(f.founderImage, [360, 540, 720], '(max-width: 860px) 100vw, 480px')
+---
+<Site title={f.seo?.title ?? `Free online session | ${settings.businessName}`} description={f.seo?.description ?? f.lead} minimal jsonld={[faqLd(f.faqs)].filter(Boolean) as object[]}>
+  <div class="hero2">
+    <div class="w">
+      <div class="hero-copy">
+        <h1>{f.headline}</h1>
+        <p class="lead">{f.lead}</p>
+        <p class="date" style="margin:0 0 16px" data-starts={live?.startsAt} data-fallback={session?.fallbackText}>{live ? `${live.text}${live.extra ? ` · ${live.extra}` : ''}` : session?.fallbackText}</p>
+        <ul class="ck" style="margin-left:0">{f.bullets?.map((b: string) => <li>{b}</li>)}</ul>
+      </div>
+      <div class="reveal" id="form"><LeadForm type="Free session" button={f.formButton} note="Takes 30 seconds. No payment needed. We never share your information." redirect="/free-session/thank-you/" /></div>
+    </div>
+  </div>
+  <section class="sx"><div class="w"><div class="t reveal"><h2>{f.whoHeading}</h2></div><ul class="ck reveal">{f.whoItems?.map((b: string) => <li>{b}</li>)}</ul></div></section>
+  <section class="sx band"><div class="w fdr" style="grid-template-columns:1.2fr 1fr">
+    <div class="reveal"><h2 style="font-size:32px;margin-bottom:10px">{f.founderHeading}</h2><p class="fp">{f.founderBody}</p><p class="sign">{settings.businessName === 'Holistic Pregnancy' ? 'Geetha Bafna' : ''}</p></div>
+    {img && <img class="im-hero2 reveal" style="--i:1;aspect-ratio:4/3;object-position:center top" src={img.src} srcset={img.srcset} sizes={img.sizes} alt={img.alt} width={img.width} height={img.height} loading="lazy" />}
+  </div></section>
+  <FAQ heading={f.faqHeading} items={f.faqs} />
+  <section class="sx band"><div class="w" style="text-align:center"><h2 class="reveal" style="font-size:clamp(24px,3.4vw,32px);margin-bottom:14px">{f.closingHeading}</h2><a class="btn btn-p reveal" href="#form">{f.formButton}</a><p class="disc">{settings.disclaimer}</p></div></section>
+</Site>

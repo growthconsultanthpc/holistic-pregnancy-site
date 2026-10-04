@@ -1,0 +1,26 @@
+---
+import Icon from '../ui/Icon.astro'
+import { pic } from '../../lib/sanity'
+const { page, calendly } = Astro.props
+const img = pic(page.heroImage, [260, 380, 520], '(max-width: 860px) 100vw, 360px')
+const badges = (page.heroBadges ?? []).slice(0, 3)
+const icons = [['leaf', ''], ['heart', 'pk'], ['lotus', '']]
+---
+<div class="hero">
+  <div class="w">
+    <div class="hero-copy">
+      <h1>{page.heroBefore} <em class="hl">{page.heroHighlight}</em> {page.heroAfter}</h1>
+      <p class="lead">{page.heroLead}</p>
+      <div class="cta">
+        <a class="btn btn-p" href="#programs">{page.heroPrimaryLabel}</a>
+        <a class="btn btn-o" href={calendly} target="_blank" rel="noopener">{page.heroSecondaryLabel}</a>
+      </div>
+      <div class="trio">
+        {badges.map((b: string, i: number) => <div><span class={`ci ${icons[i][1]}`}><Icon name={icons[i][0]} /></span>{b}</div>)}
+      </div>
+    </div>
+    <div class="vis">
+      {img && <img class="arch" src={img.src} srcset={img.srcset} sizes={img.sizes} alt={img.alt} width={img.width} height={img.height} fetchpriority="high" decoding="async" />}
+    </div>
+  </div>
+</div>

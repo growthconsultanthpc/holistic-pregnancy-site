@@ -1,0 +1,21 @@
+---
+import Site from '../../layouts/Site.astro'
+import { getSite, q, wa } from '../../lib/sanity'
+const { kind, title } = Astro.props
+const { settings } = await getSite()
+const pages = await q(`*[_id=="thankYouPages"][0]`)
+const c = pages?.[kind] ?? {}
+---
+<Site title={`${title} | ${settings.businessName}`} bar={false} noindex>
+  <section class="ty">
+    <div class="w">
+      <svg class="lotus" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c3 3 3 9 0 13-3-4-3-10 0-13z" /><path d="M4 10c4 0 7 3 8 8" /><path d="M20 10c-4 0-7 3-8 8" /></svg>
+      <h1>{c.heading}</h1>
+      <p>{c.body}</p>
+      <div class="cta" style="justify-content:center">
+        <a class="btn btn-p" href="/">Back to home</a>
+        {c.whatsappLabel && <a class="btn btn-o" href={wa(settings)} target="_blank" rel="noopener">{c.whatsappLabel}</a>}
+      </div>
+    </div>
+  </section>
+</Site>
