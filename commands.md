@@ -65,7 +65,17 @@ npx --prefix studio sanity deploy            # publish to <name>.sanity.studio (
 npx --prefix studio sanity login
 ```
 
-## Seed Sanity content
+## Sanity content scripts (v2)
+```bash
+cd studio
+npx sanity dataset export production ../backup.tar.gz               # always back up first
+npx sanity exec scripts/migrate-v2.ts --with-user-token             # v2 migration: overwrites only the v2 fields; safe to re-run
+```
+`scripts/seed.ts` is the v1 seed and refuses to run (set `ALLOW_V1_SEED=true` only for an empty v1 dataset).
+Programme page narrative text lives in `src/client/programs/<slug>.ts` (code), not Sanity.
+Every `npm run build` first runs `scripts/check-names.mjs`: it fails if a Sanity programme name is not in the PHP accepted list (and so not in Airtable).
+
+## Seed Sanity content (v1, superseded)
 ```bash
 cd studio && npx sanity exec scripts/seed.ts --with-user-token   # uses your CLI login; safe to re-run (creates only what is missing)
 ```

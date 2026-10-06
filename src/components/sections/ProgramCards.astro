@@ -15,12 +15,13 @@ const { page, programs } = Astro.props
       {programs.map((p: any, i: number) => {
         const im = pic(p.cardImage, [320, 480], '(max-width: 600px) 80vw, (max-width: 1020px) 45vw, 25vw')
         return (
-          <article class="prog reveal" style={`--i:${i}`} data-p={p.slug}>
+          <article class={`prog reveal${p.signature ? ' sig' : ''}`} style={`--i:${i}`} data-p={p.slug}>
+            {p.signature && <span class="sig-badge">★ Our signature program</span>}
             {im && <img class="im" src={im.src} srcset={im.srcset} sizes={im.sizes} alt={im.alt} width={im.width} height={im.height} loading="lazy" decoding="async" />}
             <div class="bd">
               <span class="tag" data-base={p.tag}>{p.tag}</span>
               <h3>{p.title}</h3>
-              <div class="price"><b>₹{p.price?.toLocaleString('en-IN')}</b><span>{p.meta}</span></div>
+              <div class="price"><b>₹{p.price?.toLocaleString('en-IN')}</b><span>{p.cardMeta}</span></div>
               <ul class="ck">{p.cardBullets?.map((b: string) => <li>{b}</li>)}</ul>
               <a class="btn btn-p" href={`/${p.slug}/`}>View Program</a>
             </div>

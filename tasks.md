@@ -2,6 +2,23 @@
 
 Legend: `[ ]` todo · `[~]` in progress · `[!]` blocked (needs input, see PRD §11). `G#` = `docs/decision_log.md`. Detail lives in `docs/PRD.md`.
 
+## v2 design update (G37-G42) — built on branch `v2-design`, NOT merged or deployed
+- [x] Programme pages rebuilt: generic components + `src/client/programs/*.ts` narrative (generated from the client's HTML; text verified identical)
+- [x] `program` schema rebuilt; Sanity migrated by `studio/scripts/migrate-v2.ts` (dataset backup taken first; re-run is a no-op)
+- [x] Home: stats strip, ★ signature card, new chooser labels/order, rewritten FAQs
+- [x] About "Our larger purpose"; Contact FAQ copy
+- [x] Enrol: best-time-to-call, next steps, personalised thank-you; `{callback}` setting
+- [x] Rotating announcement bar (up to 5 messages, live date first); dark in both themes (G39, G42)
+- [x] Programme names + prices in Sanity and PHP map; `scripts/check-names.mjs` build guard (G38)
+- [x] Session plan retired (G40)
+- [x] Perf fix: box-shadow glow → opacity/transform ring; content-visibility; image quality 72 (G42)
+- [!] **Anand: rename 3 Airtable `Programme` options in the UI** (Pre-Conception Program, 21 Days of Dinacharya, Holistic Paatshala), then test one real enrol lead per programme
+- [ ] Merge `v2-design` → `main` (Hostinger auto-deploys main) after the Airtable rename
+- [ ] Decide: home LCP 2.55 s vs 2.5 s budget (replace Caveat signature font with italic Playfair ≈ -0.2 s, or accept)
+- [ ] Ask client to confirm: stats figures are real; payee entity name for footer/legal; "within one working day" is achievable
+- [ ] Update `docs/design_specification.md` motion section for v2 (done in decision log; spec text pending)
+- [ ] 768/1024 widths and phone check of the new programme pages on real devices
+
 ## Setup
 - [~] Resend + Sanity accounts exist; private repo created on `hariseldon84/holistic-pregnancy-site` and first push done (move to the client's GitHub later, G22); dummy Gmail still pending. Create dedicated dummy Gmail (own recovery+2FA); private GitHub repo; Sanity + Resend accounts (G22)
 - [~] Airtable base built; verify field/option names against `docs/airtable_prompt.md`; create scoped token (G13, G23)
@@ -28,7 +45,7 @@ Legend: `[ ]` todo · `[~]` in progress · `[!]` blocked (needs input, see PRD �
 ## Inner pages
 - [x] Programme template + Preconception, Dincharya, Power of 11
 - [x] Pathshala variant
-- [x] Session plan section in programme template + Sanity `sessionPlan` + dummy plans (staging only, hidden on prod) (G30)
+- [x] ~~Session plan section~~ retired in v2 (G40)
 - [x] About, Community, Get in touch (G27)
 - [x] Free-session landing page
 - [x] Enrol form page `/enroll/<programme>/` (G2/G3); tested end to end
@@ -90,8 +107,8 @@ Legend: `[ ]` todo · `[~]` in progress · `[!]` blocked (needs input, see PRD �
 - [ ] [!] Agreement / deposit / suspension terms (parked by Anand)
 
 ## Open input (PRD §11)
-- [ ] [!] **AWAITED FROM CLIENT: session plans for all 4 programmes** (dummy meanwhile, staging only, G30)
-- [ ] [!] Confirm "21 Days of Dincharya" = 6 sessions + final prices/copy
+- [x] Session plans: no longer needed, the v2 pages replace them (G40)
+- [x] "21 Days of Dinacharya" = 21-day guided journey; prices and copy final in v2
 - [ ] [!] Legal entity name; WhatsApp/phone/email; Calendly final URL
 - [ ] [!] Reconfirm slide timeline vs scope
 

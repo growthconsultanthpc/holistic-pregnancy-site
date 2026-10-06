@@ -84,3 +84,15 @@ export const portableText = (name = 'body', title = 'Content') =>
       }),
     ],
   })
+
+export const barMessage = defineType({
+  name: 'barMessage',
+  title: 'Bar message',
+  type: 'object',
+  fields: [
+    defineField({name: 'text', type: 'string', validation: (r) => r.required().max(90).warning('Keep under 90 characters so it fits on one line on a phone.')}),
+    defineField({name: 'linkLabel', title: 'Link text (optional)', type: 'string', validation: limit(36)}),
+    defineField({name: 'linkUrl', title: 'Link address (optional)', type: 'string', description: 'A page on the site such as /preconception/ or a full https:// address.'}),
+  ],
+  preview: {select: {title: 'text', subtitle: 'linkLabel'}},
+})

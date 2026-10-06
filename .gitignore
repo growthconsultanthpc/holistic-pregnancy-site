@@ -28,3 +28,5 @@ hpc-config.php
 public/api/*.log
 *.log
 .vscode/
+
+*.zip

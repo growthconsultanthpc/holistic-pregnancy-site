@@ -2,6 +2,8 @@
 
 Status: **consolidated 2026-10-03 after the grill session.** Reasoning for every decision: `docs/decision_log.md` (`G#`). Source: kickoff brief + `reference/index.html` + grill session. Where the brief and the grill session differ, **the grill session wins**. The client's design is final except for the changes listed in §9, which need the client's sign-off.
 
+> **v2 revision (2026-10-06):** the client sent a revised design (`reference/v2_design/`). Programmes are renamed (Pre-Conception Program, Holistic Paatshala, 21 Days of Dinacharya, Power of 11), repriced, and the programme pages are long-form sales pages. Session plans are retired. See `decision_log.md` G37-G42 for everything that changed and why.
+
 ## 1. Product and audience
 See `idea.md`. Couples and women planning, expecting or early postpartum; mostly India, mostly mobile, arriving from Instagram and WhatsApp. Mobile-first. Goal: build trust, explain **four programmes**, capture leads (free session, enrol, contact, free call via Calendly). **No online payment.**
 
@@ -75,7 +77,8 @@ No splash/preloader. Loaders: form button state, inline success/error, image pla
 6. Footer legal line becomes real links; external Blog link becomes optional.
 7. Small coral text uses the darker CTA colour, and the muted grey is darkened very slightly `#667080 → #636d7d` (contrast fixes, spec §1, G34).
 8. Pillars and testimonials sections not shown until content exists.
-9. **Session plan** section added to the programme template (Sanity-driven; dummy on staging, hidden on production until the client supplies it, G30).
+9. ~~Session plan section~~ retired in v2 (G40).
+10. v2: stats strip, signature card, ladder, rotating announcement bar (replaces the client's scrolling ticker for accessibility, G39), "Our larger purpose" on About, call-back enrol flow, bar/strip colours fixed for dark mode (G42), muted grey darkened (G34).
 
 ## 10. Brief-vs-design conflicts, resolved
 | # | Conflict | Resolution |
@@ -90,7 +93,7 @@ No splash/preloader. Loaders: form button state, inline success/error, image pla
 | C8 | Hash routing, noindex | real pages; noindex on staging until launch day |
 | C9 | Legal links | real links (G8, G24) |
 | C10 | Dark mode, Community, `.htaccess`, Blog link | kept (G27) |
-| C11 | "21 Days" is 6 sessions | **still to confirm with client** |
+| C11 | "21 Days" is 6 sessions | resolved by v2: a 21-day guided journey (G40) |
 
 ## 11. Open items
 - **Domain/DNS access, Hostinger FTP/SSH (check plan offers SSH), staging subdomain** (D8) and the Resend sender domain/DNS records.

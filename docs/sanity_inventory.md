@@ -9,16 +9,23 @@ The design and layout are fixed, so nothing you type can break the look. Each fi
 |---|---|
 | **Business details** | Name, tagline, logo, phone, email, WhatsApp number, social links (Instagram, Facebook, Threads), footer text |
 | **Book a Free Call** | Your Calendly link. Every "Book a Free Call" button uses it |
-| **Announcement bar** | Switch on or off, change the text and link |
+| **Announcement bar** | Switch on or off, up to 5 messages that fade in one at a time (text and optional link each). A live session date is shown first automatically |
 | **Next free session** | Choose **No date** (the site shows "date sent on WhatsApp") or **Show date** (pick date, time and an optional label). The date shows in the announcement bar, on the home page, on the free-session page, on the thank-you page and in the confirmation email. Once the date passes, the site switches back to "no date" automatically |
 | **Payment instructions** | The text shown after enrolment and in the confirmation email (payment is collected offline) |
+
+## Numbers and promises (Site settings)
+| What | Notes |
+|---|---|
+| Years of experience, couples' lives touched, program hours delivered, million-couples mission | Shown on the home page and on every programme page. Please only publish numbers you can prove |
+| How soon you call back | e.g. "within one working day". It appears in the FAQs, the enrol page and the thank-you message, so one edit changes them all. Only promise what the team can keep |
+| Note under price boxes | e.g. "No payment needed now…" |
 
 ## Pages and content
 | Page | What you can change |
 |---|---|
 | **Home** | Headline and intro, button labels, the four trust points, the four "How it works" steps, founder text and photo, free-session text, which FAQs show |
-| **Programmes (all four)** | Name, price, number and length of sessions, images, who it's for, the questions list, what it covers, **session plan (session number, title, short description, optional length)**, what you gain, the bullets in the price box, FAQs |
-| **About, Community, Get in touch** | All text blocks. The Community page's WhatsApp link |
+| **Programmes (all four)** | Name, price, the sessions line, card tag and bullets, card and hero images, the ★ signature badge, order, the headline and intro at the top of each page, button texts and where the second button goes, the price-box bullets, FAQs. *The long-form text of each programme page is fixed by the developer: send changes and we update it.* |
+| **About, Community, Get in touch** | All text blocks, including the "Our larger purpose" saying and mission on About. The Community page's WhatsApp link |
 | **Forms** | Thank-you messages and the **three confirmation emails** (free session, enrol, contact): subject and body |
 | **FAQs** | Question, answer, and which pages show it |
 | **Testimonials** | Quote, name, stage, optional video link. The testimonials section appears only once at least **three** are published |

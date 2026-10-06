@@ -18,6 +18,16 @@ const img = pic(a.image, [240, 360, 480], '(max-width: 860px) 200px, 360px')
     </div>
   </div>
   <section class="sx"><div class="w"><div class="t reveal"><h2>{a.storyHeading}</h2></div><p class="prose reveal">{a.story}</p></div></section>
+  {a.purposeLines?.length > 0 && (
+    <section class="sx"><div class="w"><div class="pc-close reveal">
+      <p class="sx-k">{a.purposeEyebrow}</p>
+      <p class="mq">{a.purposeLines.map((l: string, i: number) => <>{i === a.purposeLines.length - 1 ? <em>{l}</em> : <>{l}<br /></>}</>)}</p>
+      <p class="sx-p" style="margin:18px auto 0;max-width:640px">{a.purposeBefore} <b>{a.purposeBold}</b> {a.purposeAfter}</p>
+      <p class="sx-p" style="margin:10px auto 0;max-width:640px"><i>{a.purposeClose}</i></p>
+      <p class="sign" style="margin-top:12px">{a.purposeName}</p>
+      <p style="margin:0;font-size:13px;color:var(--muted)">{a.purposeRole}</p>
+    </div></div></section>
+  )}
   <section class="sx band"><div class="w"><div class="t reveal"><h2>{a.approachHeading}</h2></div>
     <div class="grid g3">{a.approach?.map((c: any, i: number) => <div class="cd mid reveal" style={`--i:${i}`}><h3>{c.title}</h3><p>{c.text}</p></div>)}</div></div></section>
   <section class="sx"><div class="w"><div class="t reveal"><h2>{a.promiseHeading}</h2></div>

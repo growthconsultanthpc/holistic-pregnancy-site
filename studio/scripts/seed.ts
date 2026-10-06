@@ -52,6 +52,11 @@ function pt(md: string) {
 const DISC = 'No. It works alongside your doctor.'
 
 async function main() {
+  // The v1 seed writes fields that no longer exist (v2 schema, G37). Use scripts/migrate-v2.ts for v2 content.
+  if (process.env.ALLOW_V1_SEED !== 'true') {
+    console.error('seed.ts is the v1 seed and is superseded by migrate-v2.ts (G37). Set ALLOW_V1_SEED=true only for an empty dataset on the v1 schema.')
+    process.exit(1)
+  }
   const [hero, i1, i2, i3, i4, founder, logo] = await Promise.all([
     img('im0.webp', 'An expectant mother smiling and holding a small bunch of flowers'),
     img('im1.webp', 'Couple preparing together for parenthood'),

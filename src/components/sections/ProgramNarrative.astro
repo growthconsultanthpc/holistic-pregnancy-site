@@ -1,0 +1,79 @@
+---
+// Renders the fixed-order narrative slots from src/client/programs/<slug>.ts (client copy, G37) plus the price card.
+// Strings may contain inline <b>/<em>/<i> (trusted copy kept in code), hence set:html.
+import Stats from './Stats.astro'
+const { n, p, s } = Astro.props
+const enrol = `/enroll/${p.slug}/`
+const second = p.secondaryType === 'calendly' ? { href: s.calendlyUrl, ext: true } : { href: '/contact/', ext: false }
+const band = (b?: boolean) => `sx${b ? ' blush' : ''}`
+const price = `₹${p.price.toLocaleString('en-IN')}`
+---
+<section class={band(n.intro.band)}><div class="w sx-split">
+  <div class="reveal">
+    <p class="sx-k">{n.intro.eyebrow}</p>
+    <h2>{n.intro.heading}{n.intro.em && <> <em>{n.intro.em}</em></>}</h2>
+    {n.intro.paras.map((x: string) => <p class="sx-p" set:html={x} />)}
+  </div>
+  <div class="sx-box pc-hi reveal" style="--i:1">
+    <p class="pc-big6">{n.intro.callout.big}<span>{n.intro.callout.unit}</span></p>
+    <p class="pc-hit" set:html={n.intro.callout.hit} />
+    {n.intro.callout.withLine && <p class="pc-with" style="text-align:left;margin:0 0 10px" set:html={n.intro.callout.withLine} />}
+    <p class="pc-hin" set:html={n.intro.callout.hin} />
+  </div>
+</div></section>
+
+{n.triad && (
+  <section class={band(n.triad.band)}><div class="w">
+    <div class="t reveal"><h2>{n.triad.heading}</h2><p class="sub">{n.triad.sub}</p></div>
+    <div class="grid g3 pc-bms">
+      {n.triad.items.map((it: any, i: number) => <div class="cd reveal" style={`--i:${i}`}><span class={`pc-tag ${it.tone}`}>{it.tag}</span><p set:html={it.text} /></div>)}
+    </div>
+  </div></section>
+)}
+
+{n.coverage && (
+  <section class={band(n.coverage.band)}><div class="w">
+    <div class="t reveal"><h2>{n.coverage.heading}</h2><p class="sub">{n.coverage.sub}</p></div>
+    <div class="pc-cov reveal"><ul class="ck pc-ck">{n.coverage.items.map((x: string) => <li set:html={x} />)}</ul></div>
+  </div></section>
+)}
+
+{n.features && (
+  <section class={band(n.features.band)}><div class="w pc-two">
+    {n.features.items.map((f: any, i: number) => (
+      <div class="pc-feat reveal" style={`--i:${i}`}><p class="sx-k">{f.eyebrow}</p><h2>{f.heading}</h2>{f.paras.map((x: string) => <p set:html={x} />)}</div>
+    ))}
+  </div></section>
+)}
+
+<section class={band(n.fit.band)}><div class="w sx-split">
+  <div class="reveal">
+    <p class="sx-k">{n.fit.eyebrow}</p><h2>{n.fit.heading}</h2>
+    {n.fit.items.length > 0 && <ul class="ck pc-ck">{n.fit.items.map((x: string) => <li set:html={x} />)}</ul>}
+    {n.fit.paras.map((x: string) => <p class="sx-p" set:html={x} />)}
+  </div>
+  <div class="pc reveal" id="price" style="--i:1">
+    <h3>{p.title}</h3>
+    <div class="big">{price}</div>
+    <ul class="ck">{p.priceBullets?.map((b: string) => <li>{b}</li>)}</ul>
+    <a class="btn btn-p" href={enrol}>{p.primaryLabel}</a>
+    <a class="btn btn-o pc-dc" href={second.href} {...(second.ext ? { target: '_blank', rel: 'noopener' } : {})}>{p.secondaryLabel}</a>
+    <p class="note">{s.payNote}</p>
+  </div>
+</div></section>
+
+{n.promise && (
+  <section class={band(n.promise.band)}><div class="w"><div class="pc-promise reveal">
+    <p class="sx-k">{n.promise.eyebrow}</p>{n.promise.paras.map((x: string) => <p set:html={x} />)}
+  </div></div></section>
+)}
+
+<section class="sx"><div class="w"><div class="pc-close reveal">
+  <h2>{n.close.heading} <em>{n.close.em}</em></h2>
+  <p class="pc-with" set:html={n.close.withLine} />
+  <div class="cta" style="justify-content:center">
+    <a class="btn btn-p" href={enrol}>{p.closePrimaryLabel}</a>
+    <a class="btn btn-o" href={second.href} {...(second.ext ? { target: '_blank', rel: 'noopener' } : {})}>{p.secondaryLabel}</a>
+  </div>
+  <Stats s={s} variant="close" />
+</div></div></section>

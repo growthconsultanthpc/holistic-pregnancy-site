@@ -1,7 +1,7 @@
 ---
 import Site from '../layouts/Site.astro'
 import Hero from '../components/sections/Hero.astro'
-import TrustBar from '../components/sections/TrustBar.astro'
+import ProofStrip from '../components/sections/ProofStrip.astro'
 import ProgramCards from '../components/sections/ProgramCards.astro'
 import Founder from '../components/sections/Founder.astro'
 import Testimonials from '../components/sections/Testimonials.astro'
@@ -16,7 +16,7 @@ const og = pic(page.seo?.image, [1200], '1200px')?.src
 ---
 <Site title={page.seo?.title ?? settings.businessName} description={page.seo?.description} image={og}>
   <Hero page={page} calendly={settings.calendlyUrl} />
-  <TrustBar items={page.trustItems} />
+  <ProofStrip s={settings} items={page.trustItems} />
   <ProgramCards page={page} programs={programs} />
   <Founder page={page} />
   <Testimonials items={testimonials} />

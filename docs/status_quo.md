@@ -8,6 +8,8 @@
 ## Decided (see PRD)
 4 programmes · own forms → PHP → Airtable (client-owned) + Resend confirmation · no payments, offline, manual status · Calendly from Sanity · session date in Sanity (auto-revert) · How it works strip · blog built but OFF · dummy-draft legal pages with launch gate · testimonials gated · no preloader, calm motion with Lighthouse kill rule · client's Hostinger; GitHub/Sanity/Resend under Anand's dummy Gmail, handed over on payment.
 
+**v2 revision (2026-10-06):** built on branch `v2-design` (not merged, not deployed). See `decision_log.md` G37-G42. **Waiting on Anand: rename the 3 Airtable `Programme` options, then merge.**
+
 ## Works / half-built / broken
 Built and verified: Astro skeleton + tokens + fonts; lead endpoint (Airtable dedupe, Resend, fallback); Sanity schemas (validated) + **seeded content (64 docs, idempotent)**. Homepage and **all inner pages built from Sanity** (programmes, About, Community, Get in touch, free-session, enrol, thank-you, legal, 404, blog). SEO basics done (sitemap, robots, Organization/Course/FAQ/Article schema). Code is on GitHub (private, `hariseldon84/holistic-pregnancy-site`). Not built: Studio deploy, Sanity webhook/CI.
 

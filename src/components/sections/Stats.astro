@@ -1,0 +1,21 @@
+---
+// The four numbers come from Sanity (siteSettings). The final number is in the HTML; JS only animates the count-up.
+const { s, variant = 'hero' } = Astro.props
+const n = (v: number) => (v ?? 0).toLocaleString('en-IN')
+const items = [
+  [s.statYears, '+', 'years of experience', 'Years of experience'],
+  [s.statCouples, '+', 'couples’ lives touched', 'Couples’ lives touched'],
+  [s.statHours, '+', 'program hours delivered', 'Program hours delivered'],
+]
+---
+{variant === 'home' ? (
+  <div class="proof-row">
+    {[...items, [s.statMission, 'M', '', 'Couples: our mission']].map(([v, suf, , label]: any) => (
+      <div class="pf"><b><span class="cnt" data-to={v}>{n(v)}</span>{suf}</b><small>{label}</small></div>
+    ))}
+  </div>
+) : (
+  <div class={`pc-trust${variant === 'hero' ? ' pc-trust-h' : ''}`}>
+    {items.map(([v, suf, label]: any) => <span><b><span class="cnt" data-to={v}>{n(v)}</span>{suf}</b> {label}</span>)}
+  </div>
+)}

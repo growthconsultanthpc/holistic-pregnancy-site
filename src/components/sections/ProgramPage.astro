@@ -1,123 +1,52 @@
 ---
 import Site from '../../layouts/Site.astro'
-import { getSite, pic, showPlaceholders, faqLd, wa } from '../../lib/sanity'
+import Stats from './Stats.astro'
+import Ladder from './Ladder.astro'
+import ProgramNarrative from './ProgramNarrative.astro'
+import { getSite, pic, faqLd, fill } from '../../lib/sanity'
 const { p } = Astro.props
-const { settings } = await getSite()
+const { settings: s, programs } = await getSite()
+const modules = import.meta.glob('../../client/programs/*.ts', { eager: true }) as Record<string, any>
+const n = modules[`../../client/programs/${p.slug}.ts`]?.narrative
+if (!n) throw new Error(`No narrative file for programme "${p.slug}": add src/client/programs/${p.slug}.ts`)
 const hero = pic(p.heroImage, [480, 720, 960], '(max-width: 860px) 100vw, 520px')
 const enrol = `/enroll/${p.slug}/`
-const showPlan = (p.sessions?.length ?? 0) > 0 && (!p.planIsPlaceholder || showPlaceholders)
-const covers = p.covers ?? []
-let n = 0
-const band = () => (n++ % 2 ? 'band' : '')
+const second = p.secondaryType === 'calendly' ? { href: s.calendlyUrl, ext: true } : { href: '/contact/', ext: false }
+const vars = { callback: s.callbackPromise }
+const faqs = (p.faqs ?? []).map((f: any) => ({ question: f.question, answer: fill(f.answer, vars) }))
 const ld = [
-  { '@context': 'https://schema.org', '@type': 'Course', name: p.title, description: p.intro, provider: { '@type': 'Organization', name: settings.businessName },
+  { '@context': 'https://schema.org', '@type': 'Course', name: p.title, description: p.heroLead, provider: { '@type': 'Organization', name: s.businessName },
     offers: { '@type': 'Offer', price: p.price, priceCurrency: 'INR', category: 'Paid' } },
-  faqLd(p.faqs),
+  faqLd(faqs),
 ].filter(Boolean) as object[]
 ---
-<Site title={p.seo?.title ?? `${p.title} | ${settings.businessName}`} description={p.seo?.description ?? p.intro} enroll={{ slug: p.slug, price: p.price }} jsonld={ld}>
+<Site title={p.seo?.title ?? `${p.title} | ${s.businessName}`} description={p.seo?.description ?? p.heroLead} enroll={{ slug: p.slug, price: p.price }} jsonld={ld}>
   <div class="hero2">
     <div class="w">
       <div class="hero-copy">
-        <h1>{p.title}</h1>
-        <p class="lead">{p.intro}</p>
-        <div class="pr">{p.meta} · Online · <b>₹{p.price.toLocaleString('en-IN')}</b></div>
+        <p class="sx-k">{p.eyebrow}</p>
+        <h1>{p.heroBefore} <em>{p.heroHighlight}</em>{p.heroAfter && <> {p.heroAfter}</>}</h1>
+        <p class="lead">{p.heroLead}</p>
+        <div class="pr">{p.heroMeta} · <b>₹{p.price.toLocaleString('en-IN')}</b></div>
         <div class="cta">
-          <a class="btn btn-p" href={enrol}>{p.ctaLabel}</a>
-          <a class="btn btn-o" href={settings.calendlyUrl} target="_blank" rel="noopener">Book a Free Call</a>
+          <a class="btn btn-p glow" href={enrol}>{p.primaryLabel}</a>
+          <a class="btn btn-o" href={second.href} {...(second.ext ? { target: '_blank', rel: 'noopener' } : {})}>{p.secondaryLabel}</a>
         </div>
+        <Stats s={s} variant="hero" />
       </div>
       {hero && <img class="im-hero2" src={hero.src} srcset={hero.srcset} sizes={hero.sizes} alt={hero.alt} width={hero.width} height={hero.height} fetchpriority="high" decoding="async" />}
     </div>
   </div>
 
-  {p.whoIntro && (
-    <section class={`sx ${band()}`}>
-      <div class="w sx-split">
-        <div class="reveal">
-          <p class="sx-k">Who should join</p><h2>Is this for you?</h2>
-          <p class="sx-p">{p.whoIntro}</p>
-          {p.whoNote && <p class="sx-note">{p.whoNote}</p>}
-        </div>
-        {p.questions?.length > 0 && (
-          <div class="sx-box reveal" style="--i:1"><p class="sx-k">Questions on your mind</p><ul class="sx-q">{p.questions.map((q: string) => <li>{q}</li>)}</ul></div>
-        )}
-      </div>
-    </section>
-  )}
+  {p.inLadder && <Ladder programs={programs} current={p.slug} />}
+  <ProgramNarrative n={n} p={p} s={s} />
 
-  {covers.length > 0 && (
-    <section class={`sx ${band()}`}>
-      <div class="w">
-        <div class="t reveal"><h2>What the program covers</h2></div>
-        <div class={`grid ${covers.length === 5 ? 'g5' : covers.length === 6 ? 'g3' : 'g4'}`}>
-          {covers.map((c: any, i: number) => (
-            <div class="cd reveal" style={`--i:${i}`}>
-              <span class="sx-n">{String(i + 1).padStart(2, '0')}</span>
-              <h3>{c.title}</h3>
-              {c.text && <p>{c.text}</p>}
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )}
-
-  {showPlan && (
-    <section class={`sx ${band()}`}>
-      <div class="w">
-        <div class="t reveal"><h2>{p.planHeading}</h2>{p.planIntro && <p>{p.planIntro}</p>}</div>
-        {p.planIsPlaceholder && <p class="stg" style="display:block;max-width:760px;margin:0 auto 12px;border-radius:10px">Placeholder session plan: shown on staging only. The real plan is awaited from the client.</p>}
-        <ol class="plan">
-          {p.sessions.map((s: any, i: number) => (
-            <li class="reveal" style={`--i:${Math.min(i, 4)}`}><div><h3>{s.title}</h3>{s.summary && <p>{s.summary}</p>}</div>{s.duration && <span class="dur">{s.duration}</span>}</li>
-          ))}
-        </ol>
-      </div>
-    </section>
-  )}
-
-  {p.trimesters?.length > 0 && (
-    <section class={`sx ${band()}`}>
-      <div class="w">
-        <div class="t reveal"><h2>Your trimester roadmap</h2></div>
-        <div class="grid g3">{p.trimesters.map((c: any, i: number) => <div class="cd reveal" style={`--i:${i}`}><h3>{c.title}</h3><p>{c.text}</p></div>)}</div>
-      </div>
-    </section>
-  )}
-
-  {(p.gain || p.howPills?.length > 0) && (
-    <section class={`sx ${band()}`}>
-      <div class={`w ${p.gain ? 'sx-gain' : ''}`}>
-        {p.gain && <div class="reveal"><p class="sx-k">What you will gain</p><p class="sx-big">{p.gain}</p></div>}
-        {p.howPills?.length > 0 && (
-          <div class="reveal" style="--i:1">
-            {p.gain ? <p class="sx-k">How it works</p> : <div class="t"><h2>How it works</h2></div>}
-            <div class={`strip ${p.gain ? '' : 'center'}`}>{p.howPills.map((x: string) => <span>{x}</span>)}</div>
-          </div>
-        )}
-      </div>
-    </section>
-  )}
-
-  <section class={`sx ${band()}`}>
-    <div class="w">
-      <div class="pc reveal" id="price">
-        <h3>{p.title}</h3>
-        <div class="big">₹{p.price.toLocaleString('en-IN')}</div>
-        <ul class="ck">{p.priceBullets?.map((b: string) => <li>{b}</li>)}</ul>
-        <a class="btn btn-p" href={enrol}>{p.ctaLabel}</a>
-        <p class="note">{p.priceNote}</p>
-      </div>
-    </div>
-  </section>
-
-  {p.faqs?.length > 0 && (
-    <section class={`sx ${band()}`}>
+  {faqs.length > 0 && (
+    <section class="sx">
       <div class="w">
         <div class="t reveal"><h2>Questions, answered simply</h2></div>
-        <div class="faq reveal">{p.faqs.map((f: any, i: number) => <details open={i === 0}><summary>{f.question}</summary><p>{f.answer}</p></details>)}</div>
-        <p class="disc">{settings.disclaimer}</p>
+        <div class="faq reveal">{faqs.map((f: any, i: number) => <details open={i === 0}><summary>{f.question}</summary><p>{f.answer}</p></details>)}</div>
+        <p class="disc">{s.disclaimer}</p>
       </div>
     </section>
   )}

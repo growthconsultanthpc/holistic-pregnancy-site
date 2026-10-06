@@ -1,12 +1,13 @@
 ---
 // Generic lead form: posts to the PHP endpoint (Airtable + Resend). Stage options are code-locked (G18).
 const STAGES = ['Planning a pregnancy', 'Currently pregnant', 'Not sure yet']
-const CALL_TIMES = ['Morning', 'Afternoon', 'Evening']
-interface Props { type: 'Free session' | 'Enrol' | 'Contact'; button: string; note?: string; redirect: string; programme?: string; extended?: boolean }
-const { type, button, note, redirect, programme = '', extended = false } = Astro.props
+// Shown with hours; the stored value stays Morning / Afternoon / Evening so the lead table needs no change.
+const CALL_TIMES: [string, string][] = [['Morning', 'Morning (9am–12pm)'], ['Afternoon', 'Afternoon (12–4pm)'], ['Evening', 'Evening (4–8pm)']]
+interface Props { type: 'Free session' | 'Enrol' | 'Contact'; button: string; note?: string; redirect: string; programme?: string; programmeName?: string; extended?: boolean; callTime?: boolean }
+const { type, button, note, redirect, programme = '', programmeName = '', extended = false, callTime = false } = Astro.props
 const endpoint = import.meta.env.PUBLIC_LEAD_ENDPOINT
 ---
-<form class="form" data-lead-form data-endpoint={endpoint} data-redirect={redirect} novalidate>
+<form class="form" data-lead-form data-endpoint={endpoint} data-redirect={redirect} data-programme-name={programmeName} novalidate>
   <input type="hidden" name="type" value={type} />
   <input type="hidden" name="programme" value={programme} />
   <input type="hidden" name="utm_source" /><input type="hidden" name="utm_medium" /><input type="hidden" name="utm_campaign" /><input type="hidden" name="landing_page" />
@@ -18,7 +19,7 @@ const endpoint = import.meta.env.PUBLIC_LEAD_ENDPOINT
     <select name="stage" required><option value="">Select your stage</option>{STAGES.map((s) => <option>{s}</option>)}</select>
   </label>
   {extended && <label class="f">Question (optional)<textarea name="question" rows="3" placeholder="Your question"></textarea></label>}
-  {extended && <label class="f">Preferred call time (optional)<select name="call_time"><option value="">Select</option>{CALL_TIMES.map((s) => <option>{s}</option>)}</select></label>}
+  {(extended || callTime) && <label class="f">{callTime ? 'Best time to call' : 'Preferred call time (optional)'}<select name="call_time"><option value="">Select</option>{CALL_TIMES.map(([v, l]) => <option value={v}>{l}</option>)}</select></label>}
   <label class="f cons"><input type="checkbox" name="consent" value="1" required /> <span>I agree to be contacted by phone, WhatsApp and email about my request, and to the <a href="/privacy/" target="_blank">Privacy Policy</a>.</span></label>
   <p class="err f" role="alert" data-err></p>
   <button class="btn btn-p f" type="submit">{button}</button>
@@ -52,7 +53,10 @@ const endpoint = import.meta.env.PUBLIC_LEAD_ENDPOINT
       try {
         const res = await fetch(f.dataset.endpoint!, { method: 'POST', body: new FormData(f) })
         const j = await res.json().catch(() => ({}))
-        if (res.ok && j.ok) { location.href = f.dataset.redirect!; return }
+        if (res.ok && j.ok) {
+          try { sessionStorage.setItem('hpc_last', JSON.stringify({ name: String(new FormData(f).get('name') || '').trim().split(' ')[0], programme: f.dataset.programmeName || '' })) } catch {}
+          location.href = f.dataset.redirect!; return
+        }
         err.textContent = j.fields ? 'Please check ' + j.fields.map((x: string) => MSG[x] || x).join(', ') + '.' : res.status === 429 ? 'Too many tries. Please wait a few minutes.' : 'Something went wrong. Please try again, or message us on WhatsApp.'
       } catch {
         err.textContent = 'We could not reach the server. Please try again, or message us on WhatsApp.'

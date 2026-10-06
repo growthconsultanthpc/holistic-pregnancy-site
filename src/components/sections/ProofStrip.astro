@@ -1,0 +1,8 @@
+---
+import Stats from './Stats.astro'
+const { s, items = [] } = Astro.props
+---
+<div class="proof"><div class="w">
+  <Stats s={s} variant="home" />
+  <p class="proof-t">{items.map((i: string) => <span>{i}</span>)}</p>
+</div></div>

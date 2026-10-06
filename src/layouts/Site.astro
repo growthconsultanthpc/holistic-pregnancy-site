@@ -1,6 +1,7 @@
 ---
 import Base from './Base.astro'
 import Icon from '../components/ui/Icon.astro'
+import Bar from '../components/sections/Bar.astro'
 import { getSite, pic, sessionLabel, wa, blogOn } from '../lib/sanity'
 
 interface Props { title: string; description?: string; image?: string; bar?: boolean; minimal?: boolean; enroll?: { slug: string; price: number }; jsonld?: object[]; noindex?: boolean }
@@ -26,12 +27,7 @@ else if (s.externalBlogUrl) aboutLinks.push(['Blog', s.externalBlogUrl])
 const legal = [['Privacy Policy', '/privacy/'], ['Terms', '/terms/'], ['Refund Policy', '/refund/'], ['Medical Disclaimer', '/medical-disclaimer/']]
 ---
 <Base title={title} description={description || s.tagline} image={image} jsonld={[org, ...(jsonld ?? [])]} noindex={noindex}>
-  {bar && !minimal && s.barEnabled && (
-    <div class="bar">
-      {live && s.barShowDate ? `Free online session on ${live.text}.` : s.barText}
-      <a href="/free-session/">{s.barLinkLabel}</a>
-    </div>
-  )}
+  {bar && !minimal && <Bar s={s} session={session} />}
   <header class="hdr">
     <div class="nav">
       <a href="/" aria-label={`${s.businessName} home`}>
@@ -101,4 +97,26 @@ const legal = [['Privacy Policy', '/privacy/'], ['Terms', '/terms/'], ['Refund P
   document.querySelectorAll<HTMLElement>('[data-starts]').forEach((el) => {
     if (new Date(el.dataset.starts!) <= new Date()) { el.textContent = el.dataset.fallback || ''; }
   })
+  // Announcement bar: rotate one message at a time (G39); pauses on hover/focus; static under reduced motion
+  const bar = document.querySelector<HTMLElement>('.bar')
+  const msgs = bar ? Array.from(bar.querySelectorAll<HTMLElement>('.bar-i')) : []
+  if (bar && msgs.length > 1 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let i = 0, paused = false
+    for (const ev of ['mouseenter', 'focusin']) bar.addEventListener(ev, () => (paused = true))
+    for (const ev of ['mouseleave', 'focusout']) bar.addEventListener(ev, () => (paused = false))
+    setInterval(() => { if (paused || document.hidden) return; i = (i + 1) % msgs.length; msgs.forEach((m, j) => m.classList.toggle('on', j === i)) }, 5000)
+  }
+  // Count-up for the stats (final number is already in the HTML; skipped under reduced motion)
+  const cnts = document.querySelectorAll<HTMLElement>('.cnt')
+  if (cnts.length && 'IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const fmt = (v: number) => v.toLocaleString('en-IN')
+    const io = new IntersectionObserver((es) => es.forEach((e) => {
+      if (!e.isIntersecting) return
+      io.unobserve(e.target)
+      const el = e.target as HTMLElement, to = Number(el.dataset.to); let t0 = 0
+      const step = (t: number) => { if (!t0) t0 = t; const p = Math.min(1, (t - t0) / 1600); el.textContent = fmt(Math.round(to * (1 - Math.pow(1 - p, 3)))); if (p < 1) requestAnimationFrame(step) }
+      el.textContent = '0'; requestAnimationFrame(step)
+    }), { threshold: 0.4 })
+    cnts.forEach((c) => io.observe(c))
+  }
 </script>

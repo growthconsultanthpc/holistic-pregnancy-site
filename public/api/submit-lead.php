@@ -1,6 +1,7 @@
 <?php
 // Lead endpoint: validate -> Resend confirmation -> Airtable (dedupe by phone) -> fallback log + team alert.
 declare(strict_types=1);
+ini_set('display_errors', '0'); // never print PHP warnings/paths to visitors
 header('Content-Type: application/json');
 header('X-Content-Type-Options: nosniff');
 require __DIR__ . '/adapters/airtable.php';
@@ -36,7 +37,7 @@ $hits[] = time(); file_put_contents($rl, json_encode(array_values($hits)));
 // Allowed values mirror Airtable options and the Sanity-locked lists (PRD G18/G23).
 const STAGES = ['Planning a pregnancy', 'Currently pregnant', 'Not sure yet'];
 const TYPES = ['Free session', 'Enrol', 'Contact'];
-const PROGRAMMES = ['preconception' => 'Preconception Program', 'dincharya' => '21 Days of Dincharya', 'power-of-11' => 'Power of 11', 'pathshala' => 'Holistic Pathshala'];
+const PROGRAMMES = ['preconception' => 'Pre-Conception Program', 'dincharya' => '21 Days of Dinacharya', 'power-of-11' => 'Power of 11', 'pathshala' => 'Holistic Paatshala'];
 const TIMES = ['Morning', 'Afternoon', 'Evening'];
 
 $p = fn(string $k, int $max = 200): string => mb_substr(trim((string) ($_POST[$k] ?? '')), 0, $max);

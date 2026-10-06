@@ -25,7 +25,7 @@ export function pic(i: Img, widths: number[], sizes: string) {
   const {w, h} = dims(i)
   const ws = widths.filter((x) => !w || x <= w)
   if (!ws.length) ws.push(widths[0])
-  const src = (x: number) => builder.image(i as any).width(x).auto('format').quality(80).url()
+  const src = (x: number) => builder.image(i as any).width(x).auto('format').quality(72).url()
   return {src: src(ws[ws.length - 1]), srcset: ws.map((x) => `${src(x)} ${x}w`).join(', '), sizes, alt: i.alt ?? '', width: w, height: h}
 }
 
@@ -38,7 +38,7 @@ export const getSite = memo(() =>
     "postCount": count(*[_type=="post" && (isPlaceholder != true || $ph)]),
     "settings": *[_id=="siteSettings"][0],
     "session": *[_id=="nextSession"][0],
-    "programs": *[_type=="program"]|order(order){title, "slug": slug.current, tag, price, meta, cardImage, cardBullets, ctaLabel}
+    "programs": *[_type=="program"]|order(order){title, "slug": slug.current, tag, price, cardMeta, cardImage, cardBullets, signature, inLadder, ladderNote}
   }`, {ph: showPlaceholders}),
 )
 
@@ -59,3 +59,7 @@ export const wa = (settings: any, msg?: string) =>
 export const blogOn = (s: any, postCount = 1) => (!!s?.blogEnabled || process.env.PREVIEW_BLOG === 'true') && postCount > 0
 export const faqLd = (items: {question: string; answer: string}[] = []) =>
   items.length ? {'@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: items.map((f) => ({'@type': 'Question', name: f.question, acceptedAnswer: {'@type': 'Answer', text: f.answer}}))} : null
+
+// Fill {callback} / {name} / {programme} tokens in editor-written text (one Sanity setting drives the call-back promise everywhere).
+export const fill = (text = '', vars: Record<string, string | undefined> = {}) =>
+  text.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '')

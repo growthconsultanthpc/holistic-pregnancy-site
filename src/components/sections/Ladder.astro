@@ -1,0 +1,18 @@
+---
+// "Our pregnancy programs": generated from programmes flagged inLadder in Sanity.
+const { programs, current } = Astro.props
+const list = programs.filter((p: any) => p.inLadder)
+---
+{list.length > 0 && (
+  <section class="lad-wrap"><div class="w">
+    <p class="sx-k" style="text-align:center">Our pregnancy programs</p>
+    <div class="lad-row">
+      {list.map((p: any) => (
+        <a class={`lad${p.slug === current ? ' on' : ''}`} href={`/${p.slug}/`}>
+          <span class="lad-n">{p.signature ? '★' : '•'}</span>
+          <span><b>{p.title}</b><small>{p.ladderNote}</small></span>
+        </a>
+      ))}
+    </div>
+  </div></section>
+)}

@@ -1,11 +1,14 @@
 ---
+import { getSite, fill } from '../../lib/sanity'
 const { heading, items = [] } = Astro.props
+const { settings } = await getSite()
+const vars = { callback: settings.callbackPromise }
 ---
 {items.length > 0 && (
   <section id="faq">
     <div class="w">
       <div class="t reveal"><h2>{heading}</h2></div>
-      <div class="faq">{items.map((f: any, i: number) => <details open={i === 0}><summary>{f.question}</summary><p>{f.answer}</p></details>)}</div>
+      <div class="faq">{items.map((f: any, i: number) => <details open={i === 0}><summary>{f.question}</summary><p>{fill(f.answer, vars)}</p></details>)}</div>
     </div>
   </section>
 )}

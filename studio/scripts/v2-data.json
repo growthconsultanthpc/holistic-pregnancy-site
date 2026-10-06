@@ -1,0 +1,295 @@
+{
+  "preconception": {
+    "eyebrow": "Pre-Conception Program",
+    "heroBefore": "Before the pregnancy begins,",
+    "heroHighlight": "the journey already has.",
+    "heroAfter": "",
+    "heroLead": "We prepare carefully for the milestones that matter most in life. Pregnancy deserves that same thought, intention and preparation.",
+    "heroMeta": "6 live sessions · 60 min each · Online",
+    "primaryLabel": "Enroll Now",
+    "secondaryLabel": "Book a Discovery Call",
+    "secondaryType": "calendly",
+    "closePrimaryLabel": "Begin your pre-conception journey",
+    "priceBullets": [
+      "6 live sessions",
+      "60 minutes each",
+      "Live virtual sessions",
+      "For couples planning pregnancy"
+    ],
+    "faqs": [
+      [
+        "When should we start?",
+        "Ideally at least six months before you plan to conceive, and earlier where possible. That said, it is never too late to begin preparing."
+      ],
+      [
+        "Can my partner join?",
+        "Yes. The program is designed for couples, and both partners are encouraged to take part together."
+      ],
+      [
+        "How are sessions held?",
+        "6 live sessions of 60 minutes each, held online as live virtual sessions."
+      ],
+      [
+        "Does it guarantee conception?",
+        "No. The program does not promise conception, fertility outcomes or a particular pregnancy result. It helps you feel better prepared in body, mind and emotional wellbeing."
+      ],
+      [
+        "How does payment work?",
+        "There is no online payment on the website. After you enroll or request a call, our team will call you, answer your questions and share payment details on WhatsApp. You can pay by UPI or bank transfer to Amra Asha Education Trust, and your seat is confirmed once payment is received."
+      ],
+      [
+        "Do I need to pay right away?",
+        "No. Tap Enroll Now and share your details. We will call you first, and you pay only after your questions are answered and your batch is confirmed."
+      ],
+      [
+        "Does this replace medical care?",
+        "No. It complements care from your doctor, fertility specialist or other qualified healthcare professionals."
+      ]
+    ],
+    "ladder": []
+  },
+  "dincharya": {
+    "eyebrow": "21 Days of Dinacharya",
+    "heroBefore": "21 days to turn pregnancy learnings",
+    "heroHighlight": "into everyday practice",
+    "heroAfter": "",
+    "heroLead": "Knowing what is good for you during pregnancy is one thing. Following it consistently is what turns learning into a way of life.",
+    "heroMeta": "21-day guided journey · Any trimester",
+    "primaryLabel": "Begin your 21-day journey",
+    "secondaryLabel": "Talk to our team",
+    "secondaryType": "contact",
+    "closePrimaryLabel": "Begin your 21-day Dinacharya journey",
+    "priceBullets": [
+      "21-day guided journey",
+      "For couples in any trimester",
+      "Learning + daily implementation",
+      "Online support and monitoring throughout"
+    ],
+    "faqs": [
+      [
+        "Which trimester is this for?",
+        "Any trimester. The program is designed for couples in the first, second or third trimester."
+      ],
+      [
+        "Can my partner join?",
+        "Yes, and we encourage it. Pregnancy is a shared journey, and fathers-to-be can make a big difference."
+      ],
+      [
+        "How does the 21-day support work?",
+        "You learn the practices and are then guided and monitored online as you apply them consistently over 21 days."
+      ],
+      [
+        "What comes after?",
+        "Couples who want to go deeper can continue with Power of 11."
+      ],
+      [
+        "How does payment work?",
+        "There is no online payment on the website. After you enroll or request a call, our team will call you, answer your questions and share payment details on WhatsApp. You can pay by UPI or bank transfer to Amra Asha Education Trust, and your seat is confirmed once payment is received."
+      ],
+      [
+        "Do I need to pay right away?",
+        "No. Tap Enroll Now and share your details. We will call you first, and you pay only after your questions are answered and your batch is confirmed."
+      ],
+      [
+        "Does this replace medical care?",
+        "No. The program complements care from your doctor and other qualified healthcare professionals."
+      ]
+    ],
+    "ladder": [
+      {
+        "slug": "pathshala",
+        "mark": "★",
+        "name": "Holistic Paatshala",
+        "note": "Signature · start in early pregnancy"
+      },
+      {
+        "slug": "dincharya",
+        "mark": "•",
+        "name": "21 Days of Dinacharya",
+        "note": "Habit-forming · any trimester"
+      },
+      {
+        "slug": "power-of-11",
+        "mark": "•",
+        "name": "Power of 11",
+        "note": "11 power-packed sessions"
+      }
+    ]
+  },
+  "power-of-11": {
+    "eyebrow": "Power of 11",
+    "heroBefore": "11 powerful sessions to understand your pregnancy",
+    "heroHighlight": "more deeply",
+    "heroAfter": "",
+    "heroLead": "Pregnancy brings new changes almost every week, and with them come questions, emotions and decisions. Experience it with greater awareness, confidence and connection.",
+    "heroMeta": "11 live sessions · Weekly · Online",
+    "primaryLabel": "Begin your Power of 11 journey",
+    "secondaryLabel": "Talk to our team",
+    "secondaryType": "contact",
+    "closePrimaryLabel": "Begin your Power of 11 journey",
+    "priceBullets": [
+      "11 live guided sessions",
+      "1 session per week, 60 minutes",
+      "Live virtual sessions",
+      "Designed for expecting couples"
+    ],
+    "faqs": [
+      [
+        "Do I need to complete 21 Days of Dinacharya first?",
+        "It is not required, but Power of 11 builds on the Dinacharya foundations, so many couples find it a natural next step."
+      ],
+      [
+        "Can my partner join?",
+        "Yes. Couples are encouraged to learn and participate together."
+      ],
+      [
+        "How are sessions held?",
+        "11 live guided sessions, one per week, 60 minutes each, held online as live virtual sessions."
+      ],
+      [
+        "How does payment work?",
+        "There is no online payment on the website. After you enroll or request a call, our team will call you, answer your questions and share payment details on WhatsApp. You can pay by UPI or bank transfer to Amra Asha Education Trust, and your seat is confirmed once payment is received."
+      ],
+      [
+        "Do I need to pay right away?",
+        "No. Tap Enroll Now and share your details. We will call you first, and you pay only after your questions are answered and your batch is confirmed."
+      ],
+      [
+        "Does this replace medical care?",
+        "No. The program complements care from your doctor and other qualified healthcare professionals."
+      ]
+    ],
+    "ladder": [
+      {
+        "slug": "pathshala",
+        "mark": "★",
+        "name": "Holistic Paatshala",
+        "note": "Signature · start in early pregnancy"
+      },
+      {
+        "slug": "dincharya",
+        "mark": "•",
+        "name": "21 Days of Dinacharya",
+        "note": "Habit-forming · any trimester"
+      },
+      {
+        "slug": "power-of-11",
+        "mark": "•",
+        "name": "Power of 11",
+        "note": "11 power-packed sessions"
+      }
+    ]
+  },
+  "pathshala": {
+    "eyebrow": "Holistic Paatshala",
+    "heroBefore": "End-to-end pregnancy care for the",
+    "heroHighlight": "mind, body and soul",
+    "heroAfter": "of the mother and child",
+    "heroLead": "Pregnancy is not only a physical journey. It is a deeply emotional, mental and spiritual transition for the mother, the baby and the family.",
+    "heroMeta": "21 live sessions · Weekly · Online",
+    "primaryLabel": "Join Holistic Paatshala",
+    "secondaryLabel": "Talk to our team",
+    "secondaryType": "contact",
+    "closePrimaryLabel": "Join Holistic Paatshala",
+    "priceBullets": [
+      "21 live sessions",
+      "1 session every week, 60 minutes",
+      "Live virtual sessions",
+      "Designed for couples in early pregnancy"
+    ],
+    "faqs": [
+      [
+        "When should we join?",
+        "Holistic Paatshala is designed for couples in early pregnancy, so the 21 weekly sessions can support the complete journey."
+      ],
+      [
+        "Is it suitable for a high-risk pregnancy?",
+        "Please speak with your doctor first. Our program supports, but never replaces, medical care."
+      ],
+      [
+        "Can my partner join?",
+        "Yes. Couple bonding and participation are part of the program."
+      ],
+      [
+        "How are sessions held?",
+        "21 live sessions, one every week, 60 minutes each, held online as live virtual sessions."
+      ],
+      [
+        "How does payment work?",
+        "There is no online payment on the website. After you enroll or request a call, our team will call you, answer your questions and share payment details on WhatsApp. You can pay by UPI or bank transfer to Amra Asha Education Trust, and your seat is confirmed once payment is received."
+      ],
+      [
+        "Do I need to pay right away?",
+        "No. Tap Enroll Now and share your details. We will call you first, and you pay only after your questions are answered and your batch is confirmed."
+      ],
+      [
+        "Does this replace medical care?",
+        "No. The program complements care from your doctor and other qualified healthcare professionals."
+      ]
+    ],
+    "ladder": [
+      {
+        "slug": "pathshala",
+        "mark": "★",
+        "name": "Holistic Paatshala",
+        "note": "Signature · start in early pregnancy"
+      },
+      {
+        "slug": "dincharya",
+        "mark": "•",
+        "name": "21 Days of Dinacharya",
+        "note": "Habit-forming · any trimester"
+      },
+      {
+        "slug": "power-of-11",
+        "mark": "•",
+        "name": "Power of 11",
+        "note": "11 power-packed sessions"
+      }
+    ]
+  },
+  "_home": {
+    "faqs": [
+      [
+        "Who is this for?",
+        "Individuals and couples who are planning a pregnancy, currently pregnant, or in the early postpartum period, and want holistic, practical guidance."
+      ],
+      [
+        "Can my partner join?",
+        "Yes. Partners are included and encouraged to take part."
+      ],
+      [
+        "How does payment work?",
+        "There is no online payment on the website. After you enroll or request a call, our team will call you, answer your questions and share payment details on WhatsApp. You can pay by UPI or bank transfer to Amra Asha Education Trust, and your seat is confirmed once payment is received."
+      ],
+      [
+        "Does this replace medical care?",
+        "No. Our programs work alongside the care of your doctor and are not a substitute for medical advice."
+      ],
+      [
+        "How do I enroll?",
+        "Choose a program and tap Enroll Now, or book a free call. Share your details and our team will call you within one working day to help you choose, confirm your batch and share payment details. No payment is needed upfront."
+      ]
+    ]
+  },
+  "_contact": {
+    "faqs": [
+      [
+        "Which program should I choose?",
+        "Preconception if you are planning a pregnancy. Holistic Paatshala, our signature program, if you are in early pregnancy. 21 Days of Dinacharya to build daily habits in any trimester, and Power of 11 for 11 power-packed sessions during pregnancy. Request a call and we will help you choose."
+      ],
+      [
+        "How does payment work?",
+        "There is no online payment on the website. After you enroll or request a call, our team will call you, answer your questions and share payment details on WhatsApp. You can pay by UPI or bank transfer to Amra Asha Education Trust, and your seat is confirmed once payment is received."
+      ],
+      [
+        "How do I access sessions?",
+        "Once you enroll, we will send you the session link and schedule on WhatsApp and email. Just tap the link at the session time to join."
+      ],
+      [
+        "Is this medical advice?",
+        "No. It works alongside your doctor."
+      ]
+    ]
+  }
+}

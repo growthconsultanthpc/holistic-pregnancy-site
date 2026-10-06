@@ -1,21 +1,39 @@
 ---
 import Site from '../../layouts/Site.astro'
-import { getSite, q, wa } from '../../lib/sanity'
+import { getSite, q, wa, fill } from '../../lib/sanity'
 const { kind, title } = Astro.props
 const { settings } = await getSite()
 const pages = await q(`*[_id=="thankYouPages"][0]`)
 const c = pages?.[kind] ?? {}
+const callback = settings.callbackPromise
+// {name} / {programme} are filled in the browser from what the visitor just submitted (static pages cannot know it).
+// The server-rendered text is the tidy fallback when that is not available.
+const tidy = (t: string) => t.replace(/,\s*!/g, '!').replace(/ for\s+is in/, ' is in').replace(/\s{2,}/g, ' ').trim()
+const heading = tidy(fill(c.heading, { callback }))
+const body = tidy(fill(c.body, { callback }))
+const raw = { h: fill(c.heading, { callback, name: '{name}', programme: '{programme}' }), b: fill(c.body, { callback, name: '{name}', programme: '{programme}' }) }
 ---
 <Site title={`${title} | ${settings.businessName}`} bar={false} noindex>
   <section class="ty">
     <div class="w">
       <svg class="lotus" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c3 3 3 9 0 13-3-4-3-10 0-13z" /><path d="M4 10c4 0 7 3 8 8" /><path d="M20 10c-4 0-7 3-8 8" /></svg>
-      <h1>{c.heading}</h1>
-      <p>{c.body}</p>
-      <div class="cta" style="justify-content:center">
-        <a class="btn btn-p" href="/">Back to home</a>
-        {c.whatsappLabel && <a class="btn btn-o" href={wa(settings)} target="_blank" rel="noopener">{c.whatsappLabel}</a>}
-      </div>
+      <h1 id="ty-h" data-raw={raw.h}>{heading}</h1>
+      <p id="ty-b" data-raw={raw.b}>{body}</p>
+      {c.nextSteps?.length > 0 && <ol class="co-next">{c.nextSteps.map((x: string) => <li>{x}</li>)}</ol>}
+      {c.whatsappLabel && <p class="note" style="margin-bottom:16px">{c.whatsappPrompt} <a href={wa(settings)} target="_blank" rel="noopener" style="color:var(--accent-text);text-decoration:underline">{c.whatsappLabel}</a></p>}
+      <div class="cta" style="justify-content:center"><a class="btn btn-o" href="/">Back to home</a></div>
     </div>
   </section>
 </Site>
+
+<script>
+  try {
+    const last = JSON.parse(sessionStorage.getItem('hpc_last') || 'null')
+    const h = document.getElementById('ty-h'), b = document.getElementById('ty-b')
+    if (last && h && b) {
+      const fill = (t: string) => t.replace('{name}', last.name || '').replace('{programme}', last.programme || '').replace(/,\s*!/g, '!').replace(/ for\s+is in/, ' is in')
+      h.textContent = fill(h.dataset.raw || '')
+      b.textContent = fill(b.dataset.raw || '')
+    }
+  } catch {}
+</script>

@@ -2,12 +2,12 @@
 import Site from '../../layouts/Site.astro'
 import LeadForm from '../../components/sections/LeadForm.astro'
 import FAQ from '../../components/sections/FAQ.astro'
-import { getSite, q, wa, faqLd } from '../../lib/sanity'
+import { getSite, q, wa, faqLd, fill } from '../../lib/sanity'
 const { settings } = await getSite()
 const c = await q(`*[_id=="contactPage"][0]{..., faqs[]->{question, answer}}`)
 const tel = settings.phone?.replace(/[^\d+]/g, '')
 ---
-<Site title={c.seo?.title ?? `Get in touch | ${settings.businessName}`} description={c.seo?.description ?? c.lead} jsonld={[faqLd(c.faqs)].filter(Boolean) as object[]}>
+<Site title={c.seo?.title ?? `Get in touch | ${settings.businessName}`} description={c.seo?.description ?? c.lead} jsonld={[faqLd((c.faqs ?? []).map((f: any) => ({ ...f, answer: fill(f.answer, { callback: settings.callbackPromise }) })))].filter(Boolean) as object[]}>
   <div class="hero2">
     <div class="w">
       <div class="hero-copy"><h1>{c.headline}</h1><p class="lead">{c.lead}</p></div>

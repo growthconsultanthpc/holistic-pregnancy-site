@@ -1,5 +1,5 @@
 import {CogIcon} from '@sanity/icons/Cog'
-import {defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 import {image, limit} from './shared'
 
 export const siteSettings = defineType({
@@ -10,6 +10,7 @@ export const siteSettings = defineType({
   groups: [
     {name: 'business', title: 'Business', default: true},
     {name: 'bar', title: 'Announcement bar'},
+    {name: 'stats', title: 'Numbers & promises'},
     {name: 'blog', title: 'Blog'},
     {name: 'emails', title: 'Emails & payment'},
     {name: 'misc', title: 'Other text'},
@@ -43,15 +44,44 @@ export const siteSettings = defineType({
     defineField({name: 'legalEntity', title: 'Name in the footer copyright', type: 'string', group: 'business', initialValue: 'Holistic Pregnancy', description: 'Confirm the legal entity with the client.'}),
 
     defineField({name: 'barEnabled', title: 'Show announcement bar', type: 'boolean', group: 'bar', initialValue: true}),
-    defineField({name: 'barText', title: 'Text', type: 'string', group: 'bar', initialValue: 'Free online session for couples planning or expecting a baby.', validation: limit(100)}),
-    defineField({name: 'barLinkLabel', title: 'Link label', type: 'string', group: 'bar', initialValue: 'Join Free Session', validation: limit(24)}),
+    defineField({
+      name: 'barMessages',
+      title: 'Messages (they rotate one at a time; drag to reorder, max 5)',
+      type: 'array',
+      group: 'bar',
+      of: [defineArrayMember({type: 'barMessage'})],
+      validation: (r) => r.max(5),
+      description: 'When a free-session date is set in "Next free session", a date message is shown first automatically.',
+    }),
     defineField({
       name: 'barShowDate',
-      title: 'Add the next session date to the bar',
+      title: 'Show the next session date as the first message',
       type: 'boolean',
       group: 'bar',
       description: 'Only shows when "Next free session" is set to Show date and the date is still in the future.',
       initialValue: true,
+    }),
+
+    defineField({name: 'statYears', title: 'Years of experience', type: 'number', group: 'stats', validation: (r) => r.required().integer().min(0)}),
+    defineField({name: 'statCouples', title: 'Couples’ lives touched', type: 'number', group: 'stats', validation: (r) => r.required().integer().min(0)}),
+    defineField({name: 'statHours', title: 'Program hours delivered', type: 'number', group: 'stats', validation: (r) => r.required().integer().min(0)}),
+    defineField({name: 'statMission', title: 'Mission: million couples', type: 'number', group: 'stats', validation: (r) => r.required().integer().min(0)}),
+    defineField({
+      name: 'callbackPromise',
+      title: 'How soon do we call back?',
+      type: 'string',
+      group: 'stats',
+      initialValue: 'within one working day',
+      description: 'Appears across the site, e.g. "Our team will call you within one working day." Only promise what the team can keep.',
+      validation: limit(40),
+    }),
+    defineField({
+      name: 'payNote',
+      title: 'Note under price boxes',
+      type: 'string',
+      group: 'stats',
+      initialValue: 'No payment needed now. Our team will call you and share payment details.',
+      validation: limit(120),
     }),
 
     defineField({

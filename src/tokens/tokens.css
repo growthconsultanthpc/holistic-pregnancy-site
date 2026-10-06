@@ -7,6 +7,8 @@
   --soft: #eaf0e7; --blue: #2b5c9e;
   --sage: #e1e9dd; --sageInk: #587561; --pink: #f8e4e4; --pinkInk: #c25d66;
   --wa: #1f7a4a; --error: #c0392b;
+  /* Announcement bar + stats strip: always dark with white text. Never derive from --ink (it turns pale in dark mode). */
+  --bar-bg: #12264a; --bar-fg: #ffffff; --bar-accent: #f6b8b1;
   /* coral at small sizes fails AA (3.9:1): use --accent-text for text under ~18px (G27) */
   --accent-text: var(--cta);
 
@@ -24,6 +26,7 @@
     --ink: #f3efff; --text: #e3e1ef; --muted: #aaa8c2; --line: #37375c;
     --soft: #1f2a3a; --blue: #8db4ee;
     --sage: #2b3a33; --sageInk: #a9c9b0; --pink: #3d2b3a; --pinkInk: #f0a3aa;
+    --bar-bg: #1d3463;
   }
 }
 :root[data-theme='dark'] {
@@ -31,4 +34,5 @@
   --ink: #f3efff; --text: #e3e1ef; --muted: #aaa8c2; --line: #37375c;
   --soft: #1f2a3a; --blue: #8db4ee;
   --sage: #2b3a33; --sageInk: #a9c9b0; --pink: #3d2b3a; --pinkInk: #f0a3aa;
+  --bar-bg: #1d3463;
 }
