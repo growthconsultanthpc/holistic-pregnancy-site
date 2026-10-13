@@ -75,6 +75,24 @@ npx sanity exec scripts/migrate-v2.ts --with-user-token             # v2 migrati
 Programme page narrative text lives in `src/client/programs/<slug>.ts` (code), not Sanity.
 Every `npm run build` first runs `scripts/check-names.mjs`: it fails if a Sanity programme name is not in the PHP accepted list (and so not in Airtable).
 
+## v3 content scripts
+```bash
+cd studio
+npx sanity dataset export production ../backup.tar.gz
+npx sanity exec scripts/migrate-v3.ts --with-user-token     # offer, crmLabel, testimonials, referral setting, Terms clause
+npx sanity exec scripts/migrate-v3b.ts --with-user-token    # v3 images, FAQs, home copy (re-uploads images)
+cd .. && python3 scripts/extract-v3.py                      # regenerate src/client/pages/*.html from reference/v3_design/rendered
+node --experimental-strip-types src/lib/offer.ts            # self-check of the price maths
+```
+The offer is edited in Studio ("Offer & discount"); the site re-reads it live in the browser. Everything else needs a rebuild.
+
+## Test the referral endpoint
+```bash
+HPC_NO_RATELIMIT=1 php -S localhost:8081 -t public/api
+curl -s -X POST localhost:8081/create-referral.php -d 'name=Test&phone=9999900011&in_program=Yes&consent=1'   # {"ok":true,"code":"TEST-XXXX"}; same phone again returns the same code
+```
+Needs `airtable_ref_base_id`, `airtable_ref_table` in `hpc-config.php`. Delete the test rows afterwards.
+
 ## Seed Sanity content (v1, superseded)
 ```bash
 cd studio && npx sanity exec scripts/seed.ts --with-user-token   # uses your CLI login; safe to re-run (creates only what is missing)
@@ -109,6 +127,8 @@ curl -X POST -H "Accept: application/vnd.github+json" \
 | `FTP_HOST`, `FTP_USER`, `FTP_PASSWORD` (or `SSH_*`) | GitHub secret | upload `dist/` + `api/` |
 | `AIRTABLE_TOKEN`, `AIRTABLE_BASE_ID`, `AIRTABLE_TABLE` | Hostinger server config (never in repo) | PHP writes leads (client-owned base) |
 | `RESEND_API_KEY`, `RESEND_FROM` | Hostinger server config | confirmation emails; sender domain needs SPF/DKIM |
+| `AIRTABLE_REF_BASE_ID`, `AIRTABLE_REF_TABLE`, `airtable_v3_fields` | Hostinger server config | Referrals table + the four new Leads fields |
+| `PUBLIC_REFERRAL_ENDPOINT` | `.env` (optional) | defaults to the lead endpoint with `create-referral.php` |
 | `TEAM_ALERT_EMAIL` | Hostinger server config | alert if Airtable write fails / ~800 records |
 | `CALENDLY_URL`, `WHATSAPP_NUMBER` | **Sanity**, not env | editable by client |
 | `SITE_URL` | CI | canonical URLs, sitemap; staging vs prod |

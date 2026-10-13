@@ -6,7 +6,7 @@ export const client = createClient({
   projectId: env.SANITY_PROJECT_ID,
   dataset: env.SANITY_DATASET || 'production',
   apiVersion: '2025-01-01',
-  useCdn: true,
+  useCdn: false, // build-time only; the CDN can serve stale content right after a publish
   token: env.SANITY_READ_TOKEN || undefined,
 })
 const builder = createImageUrlBuilder(client)

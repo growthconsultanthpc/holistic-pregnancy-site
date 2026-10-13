@@ -48,7 +48,7 @@ export const homePage = defineType({
     str('heroSecondaryLabel', 'Second button text (opens Calendly)', 24, {group: 'hero', initialValue: 'Book a Free Call'}),
     image('heroImage', 'Hero image'),
     strings('heroBadges', 'Three small badges', {max: 3, len: 24}),
-    strings('trustItems', 'Trust bar items (4)', {max: 4, len: 36}),
+    strings('trustItems', 'Trust bar items (up to 5)', {max: 5, len: 36}),
 
     str('programmesHeading', 'Heading', 60, {group: 'programmes', initialValue: 'Support designed for your stage'}),
     text('programmesIntro', 'Intro', 120, {group: 'programmes'}),
@@ -76,6 +76,7 @@ export const homePage = defineType({
     str('founderHeading', 'Heading', 60, {group: 'founder', initialValue: 'Guided with care and experience'}),
     text('founderBody', 'Text', 320, {group: 'founder'}),
     image('founderImage', 'Founder photo'),
+    strings('founderCreds', 'Credentials under the founder text (up to 4)', {max: 4, len: 44}),
     strings('founderPoints', 'Four small points (desktop)', {max: 4, len: 28}),
     str('founderButton', 'Button text', 24, {group: 'founder', initialValue: 'Know Our Story'}),
     str('founderSignature', 'Signature line', 50, {group: 'founder'}),

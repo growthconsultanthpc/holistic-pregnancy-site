@@ -90,9 +90,9 @@ const legal = [['Privacy Policy', '/privacy/'], ['Terms', '/terms/'], ['Refund P
     document.documentElement.dataset.offerPct = live ? String(o.discountPercent) : ''
     document.querySelectorAll<HTMLElement>('.offer-on').forEach((e) => (e.hidden = !live))
     document.querySelectorAll<HTMLElement>('.offer-off').forEach((e) => (e.hidden = live))
-    document.querySelectorAll<HTMLElement>('[data-m]').forEach((e) => (e.innerHTML = priceHtml(+e.dataset.m!, o)))
-    document.querySelectorAll<HTMLElement>('[data-enrol-m]').forEach((e) => (e.textContent = rupees(priceOf(+e.dataset.enrolM!, o).now)))
-    document.querySelectorAll<HTMLElement>('[data-off-pct]').forEach((e) => (e.textContent = String(o?.discountPercent ?? '')))
+    document.querySelectorAll<HTMLElement>('[data-m]').forEach((e) => { const h = priceHtml(+e.dataset.m!, o); if (e.innerHTML !== h) e.innerHTML = h })
+    document.querySelectorAll<HTMLElement>('[data-enrol-m]').forEach((e) => { const t = rupees(priceOf(+e.dataset.enrolM!, o).now); if (e.textContent !== t) e.textContent = t })
+    document.querySelectorAll<HTMLElement>('[data-off-pct]').forEach((e) => { const t = String(o?.discountPercent ?? ''); if (e.textContent !== t) e.textContent = t })
     document.querySelectorAll<HTMLElement>('[data-cd]').forEach((e) => (e.dataset.ends = o?.endsAt || ''))
     document.querySelectorAll<HTMLElement>('.bar-i[hidden]').forEach((e) => e.classList.remove('on'))
     const vis = Array.from(document.querySelectorAll<HTMLElement>('.bar-i')).filter((e) => !e.hidden)

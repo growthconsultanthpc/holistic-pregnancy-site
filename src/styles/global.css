@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import '../tokens/tokens.css';
 @import './site.css';
+@import './v3.css';
 @import '@fontsource-variable/playfair-display';
 @import '@fontsource-variable/montserrat';
 @import '@fontsource/caveat/500.css';

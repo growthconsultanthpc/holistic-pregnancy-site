@@ -8,6 +8,8 @@ import Testimonials from '../components/sections/Testimonials.astro'
 import FreeSession from '../components/sections/FreeSession.astro'
 import FAQ from '../components/sections/FAQ.astro'
 import { getSite, pic, q, showPlaceholders } from '../lib/sanity'
+import why from '../client/pages/home-why.html?raw'
+import gs from '../client/pages/home-gs.html?raw'
 
 const { settings, session, programs, offer } = await getSite()
 const page = await q(`*[_id=="homePage"][0]{..., chooser[]{label, "slugs": programmes[]->slug.current}, faqs[]->{question, answer}}`)
@@ -18,8 +20,10 @@ const og = pic(page.seo?.image, [1200], '1200px')?.src
   <Hero page={page} calendly={settings.calendlyUrl} offer={offer} />
   <ProofStrip s={settings} items={page.trustItems} />
   <ProgramCards page={page} programs={programs} offer={offer} />
+  <Testimonials items={testimonials} sub={`What couples share about their journey with ${settings.businessName}`} />
   <Founder page={page} />
-  <Testimonials items={testimonials} />
+  <Fragment set:html={why} />
+  <Fragment set:html={gs} />
   <FreeSession page={page} session={session} />
   <FAQ heading={page.faqHeading} items={page.faqs} />
 </Site>

@@ -1,22 +1,35 @@
 ---
-// Hidden unless 3+ real testimonials are published (G25). Placeholders only count on staging.
-const { items = [], heading = 'Real journeys', min = 3 } = Astro.props
+// Real testimonials only (placeholders show on staging). Home needs 3+ (G25); a programme page shows its own, from 1.
+const { items = [], heading = 'In their words', sub = '', min = 3 } = Astro.props
 ---
 {items.length >= min && items.length > 0 && (
-  <section>
+  <section class="sx tsx">
     <div class="w">
-      <div class="t reveal"><h2>{heading}</h2></div>
-      <div class="quotes">
-        {items.map((t: any, i: number) => (
-          <div class="q reveal" style={`--i:${i}`}>
-            <div class="m" aria-hidden="true">“</div>
-            <p>{t.quote}</p>
-            <b>{t.name}</b>
-            {t.stage && <small>{t.stage}</small>}
-            {t.videoUrl && <p><a href={t.videoUrl} target="_blank" rel="noopener">Watch the video</a></p>}
-          </div>
+      <div class="t reveal"><h2>{heading}</h2>{sub && <p class="sub">{sub}</p>}</div>
+      <div class="ts-row">
+        {items.map((t: any) => (
+          <figure class="ts-cd reveal">
+            <span class="ts-q" aria-hidden="true">“</span>
+            <blockquote class="ts-tx hp-clamp">{t.quote}</blockquote>
+            <button type="button" class="hp-rm" aria-expanded="false" hidden>Read more</button>
+            <figcaption class="ts-by">
+              <span class="ts-av" aria-hidden="true">{t.name?.[0]}</span>
+              <span class="ts-nm">{t.name}{t.stage && <small>{t.stage}</small>}</span>
+            </figcaption>
+          </figure>
         ))}
       </div>
+      <p class="hp-swipe">Swipe for more stories →</p>
     </div>
   </section>
 )}
+
+<script>
+  // "Read more" appears only where the text is actually cut off
+  const fit = () => document.querySelectorAll<HTMLElement>('.ts-cd').forEach((c) => {
+    const q = c.querySelector<HTMLElement>('.ts-tx')!, b = c.querySelector<HTMLButtonElement>('.hp-rm')!
+    if (!q || !b || b.dataset.on) return
+    if (q.scrollHeight > q.clientHeight + 2) { b.hidden = false; b.dataset.on = '1'; b.addEventListener('click', () => { const open = q.classList.toggle('hp-clamp') === false; b.textContent = open ? 'Show less' : 'Read more'; b.setAttribute('aria-expanded', String(open)) }) }
+  })
+  fit(); addEventListener('load', fit)
+</script>

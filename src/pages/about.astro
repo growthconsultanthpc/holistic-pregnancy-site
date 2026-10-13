@@ -1,36 +1,14 @@
 ---
+// About = the client's v3 page, kept as written (src/client/pages/about.html); only the founder photo and SEO come from Sanity.
 import Site from '../layouts/Site.astro'
 import { getSite, pic, q } from '../lib/sanity'
+import raw from '../client/pages/about.html?raw'
 const { settings } = await getSite()
-const a = await q(`*[_id=="aboutPage"][0]`)
-const img = pic(a.image, [240, 360, 480], '(max-width: 860px) 200px, 360px')
+const home = await q(`*[_id=="homePage"][0]{founderImage}`)
+const a = await q(`*[_id=="aboutPage"][0]{seo, lead}`)
+const img = pic(home.founderImage, [240, 360, 480], '(max-width: 860px) 200px, 360px')
+const tag = img ? `<img class="fph" src="${img.src}" srcset="${img.srcset}" sizes="${img.sizes}" alt="${img.alt.replace(/"/g, '&quot;')}" width="${img.width}" height="${img.height}" fetchpriority="high" />` : ''
 ---
-<Site title={a.seo?.title ?? `Our Story | ${settings.businessName}`} description={a.seo?.description ?? a.lead}>
-  <div class="hero2">
-    <div class="w">
-      <div class="hero-copy">
-        <h1>{a.headline}</h1>
-        <p class="lead">{a.lead}</p>
-        <p style="font:italic 500 20px var(--font-display);color:var(--blue);margin:-6px 0 20px">{a.signature}</p>
-        <a class="btn btn-p" href="/#programs">Explore Programs</a>
-      </div>
-      {img && <img class="fph" style="margin:0 auto" src={img.src} srcset={img.srcset} sizes={img.sizes} alt={img.alt} width={img.width} height={img.height} fetchpriority="high" />}
-    </div>
-  </div>
-  <section class="sx"><div class="w"><div class="t reveal"><h2>{a.storyHeading}</h2></div><p class="prose reveal">{a.story}</p></div></section>
-  {a.purposeLines?.length > 0 && (
-    <section class="sx"><div class="w"><div class="pc-close reveal">
-      <p class="sx-k">{a.purposeEyebrow}</p>
-      <p class="mq">{a.purposeLines.map((l: string, i: number) => <>{i === a.purposeLines.length - 1 ? <em>{l}</em> : <>{l}<br /></>}</>)}</p>
-      <p class="sx-p" style="margin:18px auto 0;max-width:640px">{a.purposeBefore} <b>{a.purposeBold}</b> {a.purposeAfter}</p>
-      <p class="sx-p" style="margin:10px auto 0;max-width:640px"><i>{a.purposeClose}</i></p>
-      <p class="sign" style="margin-top:12px">{a.purposeName}</p>
-      <p style="margin:0;font-size:13px;color:var(--muted)">{a.purposeRole}</p>
-    </div></div></section>
-  )}
-  <section class="sx band"><div class="w"><div class="t reveal"><h2>{a.approachHeading}</h2></div>
-    <div class="grid g3">{a.approach?.map((c: any, i: number) => <div class="cd mid reveal" style={`--i:${i}`}><h3>{c.title}</h3><p>{c.text}</p></div>)}</div></div></section>
-  <section class="sx"><div class="w"><div class="t reveal"><h2>{a.promiseHeading}</h2></div>
-    <div class="grid g4">{a.promise?.map((c: any, i: number) => <div class="cd mid reveal" style={`--i:${i}`}><h3>{c.title}</h3></div>)}</div></div></section>
-  <section class="sx band"><div class="w" style="text-align:center"><h2 class="reveal" style="font-size:clamp(24px,3.4vw,32px);margin-bottom:18px">{a.closingHeading}</h2><a class="btn btn-p reveal" href="/#programs">Explore Programs</a></div></section>
+<Site title={a?.seo?.title ?? `Our Story | ${settings.businessName}`} description={a?.seo?.description ?? a?.lead}>
+  <Fragment set:html={raw.replace('<!--FOUNDER_IMG-->', tag)} />
 </Site>

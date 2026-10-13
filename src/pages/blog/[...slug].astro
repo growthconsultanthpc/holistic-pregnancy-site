@@ -3,13 +3,13 @@
 // Dummy posts (isPlaceholder) build on staging only.
 import Site from '../../layouts/Site.astro'
 import { getSite, pic, q, showPlaceholders, blogOn } from '../../lib/sanity'
-import { renderPT } from '../../lib/pt'
+import { renderPT, readMins } from '../../lib/pt'
 
 export async function getStaticPaths() {
   const { settings, postCount } = await getSite()
   if (!blogOn(settings, postCount)) return []
   const posts = await q(`*[_type=="post" && (isPlaceholder != true || $ph)]|order(publishedAt desc){
-    title, "slug": slug.current, publishedAt, excerpt, coverImage, body, seo, isPlaceholder,
+    title, "slug": slug.current, publishedAt, excerpt, coverImage, body, seo, isPlaceholder, featured,
     "author": author->{name, role}, "categories": categories[]->title}`, { ph: showPlaceholders })
   return [
     { params: { slug: undefined }, props: { posts, post: null } },
@@ -17,6 +17,12 @@ export async function getStaticPaths() {
   ]
 }
 const { posts, post } = Astro.props
+// Showcase: one random pick among posts marked "Showcase" (else the newest). Re-picked on every rebuild, so the nightly rebuild rotates it.
+const pool = posts.filter((p: any) => p.featured)
+const show = pool.length ? pool[Math.floor(Math.random() * pool.length)] : posts[0]
+const rest = posts.filter((p: any) => p !== show)
+const cats = [...new Set(posts.flatMap((p: any) => p.categories ?? []))] as string[]
+const more = post ? posts.filter((p: any) => p.slug !== post.slug).slice(0, 2) : []
 const { settings } = await getSite()
 const when = (d: string) => new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
 const cover = post && pic(post.coverImage, [480, 800, 1200], '(max-width: 800px) 100vw, 760px')
@@ -24,33 +30,58 @@ const ld = post ? [{ '@context': 'https://schema.org', '@type': 'Article', headl
 ---
 <Site title={post ? (post.seo?.title ?? `${post.title} | ${settings.businessName}`) : `Blog | ${settings.businessName}`} description={post ? (post.seo?.description ?? post.excerpt) : 'Articles on preconception, pregnancy and postpartum wellbeing.'} jsonld={ld}>
   {post ? (
-    <section>
-      <div class="w legal">
-        <a class="co-back" href="/blog/">← All articles</a>
-        <p class="sx-k">{post.categories?.join(' · ')}</p>
-        <h1>{post.title}</h1>
-        <p style="color:var(--muted);font-size:14px">{when(post.publishedAt)}{post.author && ` · ${post.author.name}`}</p>
-        {post.isPlaceholder && <p class="draftflag"><b>Dummy post.</b> Shown on staging only.</p>}
-        {cover && <img class="cover" src={cover.src} srcset={cover.srcset} sizes={cover.sizes} alt={cover.alt} width={cover.width} height={cover.height} />}
-        <div class="richtext" set:html={renderPT(post.body)} />
+    <>
+      <div class="hero2 c bl-head">
+        <div class="w"><div class="hero-copy">
+          <p class="sx-k">{post.categories?.join(' · ') || 'Journal'}</p>
+          <h1>{post.title}</h1>
+          <p class="bl-meta">{when(post.publishedAt)} · {readMins(post.body)} min read{post.author && ` · ${post.author.name}`}</p>
+          {post.isPlaceholder && <p class="draftflag"><b>Dummy post.</b> Shown on staging only.</p>}
+        </div></div>
       </div>
-    </section>
+      <section class="bl-art"><div class="w">
+        {cover && <img class="cover bl-cover" src={cover.src} srcset={cover.srcset} sizes={cover.sizes} alt={cover.alt} width={cover.width} height={cover.height} fetchpriority="high" />}
+        <div class="richtext bl-body" set:html={renderPT(post.body)} />
+        <div class="bl-cta"><h3>Begin with a free online session</h3><p>A live, friendly session to understand your stage and learn simple daily practices.</p><a class="btn btn-p" href="/free-session/">Join the free session</a></div>
+      </div></section>
+      {more.length > 0 && <section class="sx band"><div class="w"><div class="t reveal"><h2>Keep reading</h2></div>
+        <div class="posts two">{more.map((p: any) => <a class="post" href={`/blog/${p.slug}/`}><div class="bd"><small>{p.categories?.join(' · ')}</small><h2>{p.title}</h2><p>{p.excerpt}</p></div></a>)}</div></div></section>}
+    </>
   ) : (
-    <section>
-      <div class="w">
-        <div class="t reveal"><h2>Blog</h2><p>Articles on preconception, pregnancy and postpartum wellbeing.</p></div>
-        <div class="posts">
-          {posts.map((p: any, i: number) => {
+    <>
+      <div class="hero2 c bl-head"><div class="w"><div class="hero-copy">
+        <p class="sx-k">The Holistic Pregnancy journal</p>
+        <h1>Gentle reading for <em>every stage</em> of the journey</h1>
+        <p class="lead">Articles on preconception, pregnancy and early motherhood, from our team.</p>
+      </div></div></div>
+      <section><div class="w">
+        {show && (() => {
+          const im = pic(show.coverImage, [480, 800, 1200], '(max-width: 860px) 100vw, 560px')
+          return <a class="bl-show reveal" href={`/blog/${show.slug}/`}>
+            {im && <img src={im.src} srcset={im.srcset} sizes={im.sizes} alt={im.alt} width={im.width} height={im.height} fetchpriority="high" />}
+            <div class="bd"><span class="tag">Featured article</span><small>{show.categories?.join(' · ')}</small><h2>{show.title}</h2><p>{show.excerpt}</p><span class="bl-more">Read article →</span></div>
+          </a>
+        })()}
+        {cats.length > 1 && <div class="chooser" role="group" aria-label="Filter articles"><button type="button" class="chip" aria-pressed="true" data-cat="">All</button>{cats.map((c) => <button type="button" class="chip" aria-pressed="false" data-cat={c}>{c}</button>)}</div>}
+        {rest.length > 0 && <div class="posts">
+          {rest.map((p: any, i: number) => {
             const im = pic(p.coverImage, [320, 480, 640], '(max-width: 600px) 100vw, 33vw')
             return (
-              <a class="post reveal" style={`--i:${i}`} href={`/blog/${p.slug}/`}>
+              <a class="post reveal" style={`--i:${i}`} href={`/blog/${p.slug}/`} data-cats={(p.categories ?? []).join('|')}>
                 {im && <img class="im" src={im.src} srcset={im.srcset} sizes={im.sizes} alt={im.alt} width={im.width} height={im.height} loading="lazy" />}
-                <div class="bd"><small>{p.categories?.join(' · ')}</small><h2>{p.title}</h2><p>{p.excerpt}</p></div>
+                <div class="bd"><small>{p.categories?.join(' · ')} · {readMins(p.body)} min read</small><h2>{p.title}</h2><p>{p.excerpt}</p></div>
               </a>
             )
           })}
-        </div>
-      </div>
-    </section>
+        </div>}
+      </div></section>
+    </>
   )}
 </Site>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-cat]').forEach((b) => b.addEventListener('click', () => {
+    document.querySelectorAll('[data-cat]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)))
+    document.querySelectorAll<HTMLElement>('.posts .post[data-cats]').forEach((p) => (p.hidden = !!b.dataset.cat && !p.dataset.cats!.split('|').includes(b.dataset.cat)))
+  }))
+</script>
