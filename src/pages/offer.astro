@@ -1,0 +1,52 @@
+---
+import Site from '../layouts/Site.astro'
+import LeadForm from '../components/sections/LeadForm.astro'
+import Stats from '../components/sections/Stats.astro'
+import { getSite } from '../lib/sanity'
+import { isLive, priceHtml } from '../lib/offer'
+const { settings: s, programs, offer } = await getSite()
+const on = isLive(offer)
+const ends = offer?.endsAt ? new Date(offer.endsAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', timeZone: 'Asia/Kolkata' }) : ''
+const left = on && offer.endsAt ? Math.max(0, new Date(offer.endsAt).getTime() - Date.now()) : 0
+const parts = [['days', Math.floor(left / 864e5)], ['hrs', Math.floor(left / 36e5) % 24], ['min', Math.floor(left / 6e4) % 60], ['sec', Math.floor(left / 1e3) % 60]]
+const steps = ['Choose a program and tap Claim offer, or leave your number below.', `We call you ${s.callbackPromise} to answer your questions.`, `Pay by UPI or bank transfer${ends ? ` before ${ends}` : ''} to keep the offer price.`]
+---
+<Site title={`Offer | ${s.businessName}`} description={offer?.pageIntro}>
+  <div class="hero2 c" data-offer-page>
+    <div class="w"><div class="hero-copy">
+      <p class="sx-k offer-on" hidden={!on}>Limited-time offer{ends && ` · ends ${ends}`}</p>
+      <h1>{offer?.pageTitle}</h1>
+      <p class="lead offer-on" hidden={!on}>{offer?.pageIntro}</p>
+      <p class="lead offer-off" hidden={on}>{offer?.endedText}</p>
+      {offer?.endsAt && <div class="cp-prem offer-on" hidden={!on} style="margin-inline:auto;justify-content:center"><span class="cpp-r" style="align-items:center"><span class="cpp-ends">Offer ends in</span><span class="cpp-cd" data-cd data-ends={offer.endsAt}>{parts.map(([l, v]) => <span><b>{String(v).padStart(2, '0')}</b><i>{l}</i></span>)}</span></span></div>}
+      <span data-off-pct hidden>{offer?.discountPercent}</span>
+      <div class="cta" style="justify-content:center"><a class="btn btn-p" href="#offer-prices">Programs and prices</a><a class="btn btn-o" href="#offer-call">Request a call back</a></div>
+    </div></div>
+  </div>
+
+  <section class="sx" id="offer-prices"><div class="w">
+    <div class="t reveal"><h2 class="offer-on" hidden={!on}>Offer prices on all programs</h2><h2 class="offer-off" hidden={on}>Our programs</h2><p>Live online sessions with Geetha Bafna. No payment needed now: our team calls you to confirm your seat.</p></div>
+    <div class="progs">
+      {programs.map((p: any, i: number) => (
+        <article class="prog reveal" style={`--i:${i}`}><div class="bd">
+          <h3>{p.title}</h3>
+          <div class="price"><b data-m={p.price} set:html={priceHtml(p.price, offer)} /><span>{p.cardMeta}</span></div>
+          <ul class="ck">{p.cardBullets?.map((b: string) => <li>{b}</li>)}</ul>
+          <a class="btn btn-p" href={`/enroll/${p.slug}/`}><span class="offer-on" hidden={!on}>Claim offer</span><span class="offer-off" hidden={on}>Enroll now</span></a>
+          <a class="btn btn-o" style="margin-top:8px" href={`/${p.slug}/`}>Program details</a>
+        </div></article>
+      ))}
+    </div>
+  </div></section>
+
+  <section class="sx band offer-on" hidden={!on}><div class="w">
+    <div class="t reveal"><p class="sx-k">How the offer works</p><h2>Three simple steps</h2></div>
+    <div class="grid g4" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">{steps.map((t, i) => <div class="cd mid reveal" style={`--i:${i}`}><span class="step-n">{i + 1}</span><p>{t}</p></div>)}</div>
+    <Stats s={s} variant="hero" />
+  </div></section>
+
+  <section class="sx" id="offer-call"><div class="w" style="max-width:640px">
+    <div class="t reveal"><h2>Request a call back</h2></div>
+    <LeadForm type="Contact" callTime button="Request a call back" note={on ? `Offer code ${offer.code} is applied automatically.` : undefined} redirect="/contact/thank-you/" />
+  </div></section>
+</Site>

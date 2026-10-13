@@ -2,11 +2,11 @@
 import Base from './Base.astro'
 import Icon from '../components/ui/Icon.astro'
 import Bar from '../components/sections/Bar.astro'
-import { getSite, pic, sessionLabel, wa, blogOn } from '../lib/sanity'
+import { getSite, pic, sessionLabel, wa, blogOn, offerApi } from '../lib/sanity'
 
-interface Props { title: string; description?: string; image?: string; bar?: boolean; minimal?: boolean; enroll?: { slug: string; price: number }; jsonld?: object[]; noindex?: boolean }
+interface Props { title: string; description?: string; image?: string; bar?: boolean; minimal?: boolean; enroll?: { slug: string; price: number; now?: number }; jsonld?: object[]; noindex?: boolean }
 const { title, description, image, bar = true, minimal = false, enroll, jsonld, noindex } = Astro.props
-const { settings: s, session, programs, postCount } = await getSite()
+const { settings: s, session, programs, postCount, offer } = await getSite()
 const live = sessionLabel(session)
 const logo = pic(s.logo, [143, 286], '143px')
 const year = new Date().getFullYear()
@@ -19,15 +19,15 @@ const org = {
   ...((s.phone || s.email) && { contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', availableLanguage: ['en'], ...(s.phone && { telephone: s.phone }), ...(s.email && { email: s.email }) } }),
 }
 // Programme pages swap the call button for Enroll (as in the original design); the landing page hides navigation.
-const cta = enroll ? { href: `/enroll/${enroll.slug}/`, label: `Enroll Now · ₹${enroll.price.toLocaleString('en-IN')}`, ext: false } : { href: s.calendlyUrl, label: 'Book a Free Call', ext: true }
+const cta: any = enroll ? { href: `/enroll/${enroll.slug}/`, label: 'Enroll Now', m: enroll.price, now: enroll.now ?? enroll.price, ext: false } : { href: s.calendlyUrl, label: 'Book a Free Call', ext: true }
 const socials = [['Instagram', s.instagramUrl], ['Facebook', s.facebookUrl], ['Threads', s.threadsUrl], ['WhatsApp', s.whatsappNumber && wa(s, '')]].filter(([, u]) => u)
-const aboutLinks = [['Our Story', '/about/'], ['Community', '/community/'], ['Get in Touch', '/contact/']]
+const aboutLinks = [['Our Story', '/about/'], ['Community', '/community/'], ['Refer a Friend', '/refer/'], ['Get in Touch', '/contact/']]
 if (blogOn(s, postCount)) aboutLinks.push(['Blog', '/blog/'])
 else if (s.externalBlogUrl) aboutLinks.push(['Blog', s.externalBlogUrl])
 const legal = [['Privacy Policy', '/privacy/'], ['Terms', '/terms/'], ['Refund Policy', '/refund/'], ['Medical Disclaimer', '/medical-disclaimer/']]
 ---
 <Base title={title} description={description || s.tagline} image={image} jsonld={[org, ...(jsonld ?? [])]} noindex={noindex}>
-  {bar && !minimal && <Bar s={s} session={session} />}
+  {bar && !minimal && <Bar s={s} session={session} offer={offer} />}
   <header class="hdr">
     <div class="nav">
       <a href="/" aria-label={`${s.businessName} home`}>
@@ -41,13 +41,14 @@ const legal = [['Privacy Policy', '/privacy/'], ['Terms', '/terms/'], ['Refund P
         </span>
         <a href="/about/">About</a>
         <a href="/community/">Community</a>
+        <a href="/refer/">Refer a Friend</a>
         <a href="/contact/">Contact</a>
       </nav>}
-      {!minimal && <a class="btn btn-p nav-cta" href={cta.href} {...(cta.ext ? {target: '_blank', rel: 'noopener'} : {})}>{cta.label}</a>}
+      {!minimal && <a class="btn btn-p nav-cta" href={cta.href} {...(cta.ext ? {target: '_blank', rel: 'noopener'} : {})}>{cta.label}{cta.m && <> · <span data-enrol-m={cta.m}>₹{cta.now.toLocaleString('en-IN')}</span></>}</a>}
     </div>
   </header>
 
-  <main id="top"><slot /></main>
+  <main id="top" data-offer-src={offerApi}><slot /></main>
 
   <footer class="ftr">
     <div class="w">
@@ -68,7 +69,7 @@ const legal = [['Privacy Policy', '/privacy/'], ['Terms', '/terms/'], ['Refund P
   </footer>
 
   {!minimal && <div class="mcta" id="mcta">
-    <a class="a1" href={cta.href} {...(cta.ext ? {target: '_blank', rel: 'noopener'} : {})}>{cta.label}</a>
+    <a class="a1" href={cta.href} {...(cta.ext ? {target: '_blank', rel: 'noopener'} : {})}>{cta.label}{cta.m && <> · <span data-enrol-m={cta.m}>₹{cta.now.toLocaleString('en-IN')}</span></>}</a>
     <a class="a2" href={wa(s)} target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11.5a8 8 0 0 1-11.9 7L4 20l1.5-4A8 8 0 1 1 20 11.5z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-.8.8c-1-.4-1.8-1.2-2.2-2.2l.8-.8-1-2z"/></svg>
     </a>
@@ -76,6 +77,46 @@ const legal = [['Privacy Policy', '/privacy/'], ['Terms', '/terms/'], ['Refund P
 </Base>
 
 <script>
+  // Live offer layer: re-reads the offer from Sanity so a switch, % or end date change shows without a rebuild.
+  import { isLive, priceOf, priceHtml, rupees } from '../lib/offer'
+  const src = document.querySelector<HTMLElement>('main')?.dataset.offerSrc
+  let cur: any = null, tick: number | undefined
+  const two = (n: number) => String(n).padStart(2, '0')
+  function apply(o: any) {
+    cur = o
+    const live = isLive(o)
+    window.dispatchEvent(new CustomEvent('hpc:offer', { detail: { live, code: live ? o?.code : '' } }))
+    document.documentElement.dataset.offerCode = live ? o.code || '' : ''
+    document.documentElement.dataset.offerPct = live ? String(o.discountPercent) : ''
+    document.querySelectorAll<HTMLElement>('.offer-on').forEach((e) => (e.hidden = !live))
+    document.querySelectorAll<HTMLElement>('.offer-off').forEach((e) => (e.hidden = live))
+    document.querySelectorAll<HTMLElement>('[data-m]').forEach((e) => (e.innerHTML = priceHtml(+e.dataset.m!, o)))
+    document.querySelectorAll<HTMLElement>('[data-enrol-m]').forEach((e) => (e.textContent = rupees(priceOf(+e.dataset.enrolM!, o).now)))
+    document.querySelectorAll<HTMLElement>('[data-off-pct]').forEach((e) => (e.textContent = String(o?.discountPercent ?? '')))
+    document.querySelectorAll<HTMLElement>('[data-cd]').forEach((e) => (e.dataset.ends = o?.endsAt || ''))
+    document.querySelectorAll<HTMLElement>('.bar-i[hidden]').forEach((e) => e.classList.remove('on'))
+    const vis = Array.from(document.querySelectorAll<HTMLElement>('.bar-i')).filter((e) => !e.hidden)
+    if (vis.length && !vis.some((e) => e.classList.contains('on'))) vis[0].classList.add('on')
+    window.clearInterval(tick)
+    if (live && o.endsAt) { tick = window.setInterval(count, 1000); count() }
+  }
+  function count() {
+    if (!isLive(cur)) { apply({ ...cur, enabled: false }); return }
+    const left = Math.max(0, new Date(cur.endsAt).getTime() - Date.now())
+    const v = [Math.floor(left / 864e5), Math.floor(left / 36e5) % 24, Math.floor(left / 6e4) % 60, Math.floor(left / 1e3) % 60]
+    document.querySelectorAll<HTMLElement>('[data-cd]').forEach((e) => e.querySelectorAll('b').forEach((b, i) => (b.textContent = two(v[i]))))
+  }
+  if (src) {
+    // Start from what the page was built with (data-ends / data-off-pct), then refresh from Sanity.
+    const first = document.querySelector<HTMLElement>('[data-cd]')?.dataset.ends
+    const pct = Number(document.querySelector('[data-off-pct]')?.textContent) || 0
+    const built = document.querySelector<HTMLElement>('.cp-prem.offer-on, .bar-i.offer-on')
+    if (built && !built.hidden) apply({ enabled: true, discountPercent: pct, endsAt: first })
+    fetch(src).then((r) => r.json()).then((j) => { if (j.result) apply(j.result) }).catch(() => {})
+  }
+  // A friend's link (?ref=CODE) is remembered for the session and pre-fills the enrol form
+  const rc = new URLSearchParams(location.search).get('ref')
+  if (rc && /^[A-Za-z]{1,5}-[A-Za-z0-9]{4}$/.test(rc)) try { sessionStorage.setItem('hpc_ref', rc.toUpperCase()) } catch {}
   // Programs dropdown
   const dd = document.querySelector('.dd'), t = dd?.querySelector('.dd-t')
   if (dd && t) {
@@ -99,12 +140,13 @@ const legal = [['Privacy Policy', '/privacy/'], ['Terms', '/terms/'], ['Refund P
   })
   // Announcement bar: rotate one message at a time (G39); pauses on hover/focus; static under reduced motion
   const bar = document.querySelector<HTMLElement>('.bar')
-  const msgs = bar ? Array.from(bar.querySelectorAll<HTMLElement>('.bar-i')) : []
-  if (bar && msgs.length > 1 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const all = bar ? Array.from(bar.querySelectorAll<HTMLElement>('.bar-i')) : []
+  const msgs = () => all.filter((m) => !m.hidden)
+  if (bar && all.length > 1 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     let i = 0, paused = false
     for (const ev of ['mouseenter', 'focusin']) bar.addEventListener(ev, () => (paused = true))
     for (const ev of ['mouseleave', 'focusout']) bar.addEventListener(ev, () => (paused = false))
-    setInterval(() => { if (paused || document.hidden) return; i = (i + 1) % msgs.length; msgs.forEach((m, j) => m.classList.toggle('on', j === i)) }, 5000)
+    setInterval(() => { const v = msgs(); if (paused || document.hidden || v.length < 2) return; i = (i + 1) % v.length; all.forEach((m) => m.classList.remove('on')); v[i].classList.add('on') }, 5000)
   }
   // Count-up for the stats (final number is already in the HTML; skipped under reduced motion)
   const cnts = document.querySelectorAll<HTMLElement>('.cnt')

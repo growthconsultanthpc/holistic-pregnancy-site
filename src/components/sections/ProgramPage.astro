@@ -3,12 +3,16 @@ import Site from '../../layouts/Site.astro'
 import Stats from './Stats.astro'
 import Ladder from './Ladder.astro'
 import ProgramNarrative from './ProgramNarrative.astro'
-import { getSite, pic, faqLd, fill } from '../../lib/sanity'
+import Testimonials from './Testimonials.astro'
+import { getSite, pic, faqLd, fill, q, showPlaceholders } from '../../lib/sanity'
+import { priceHtml, priceOf } from '../../lib/offer'
 const { p } = Astro.props
-const { settings: s, programs } = await getSite()
+const { settings: s, programs, offer } = await getSite()
+const now = priceOf(p.price, offer).now
 const modules = import.meta.glob('../../client/programs/*.ts', { eager: true }) as Record<string, any>
 const n = modules[`../../client/programs/${p.slug}.ts`]?.narrative
 if (!n) throw new Error(`No narrative file for programme "${p.slug}": add src/client/programs/${p.slug}.ts`)
+const reviews = await q(`*[_type=="testimonial" && visible != false && $slug in programmes && (isPlaceholder != true || $ph)]|order(_createdAt){quote, name, stage}`, { slug: p.slug, ph: showPlaceholders })
 const hero = pic(p.heroImage, [480, 720, 960], '(max-width: 860px) 100vw, 520px')
 const enrol = `/enroll/${p.slug}/`
 const second = p.secondaryType === 'calendly' ? { href: s.calendlyUrl, ext: true } : { href: '/contact/', ext: false }
@@ -20,14 +24,14 @@ const ld = [
   faqLd(faqs),
 ].filter(Boolean) as object[]
 ---
-<Site title={p.seo?.title ?? `${p.title} | ${s.businessName}`} description={p.seo?.description ?? p.heroLead} enroll={{ slug: p.slug, price: p.price }} jsonld={ld}>
+<Site title={p.seo?.title ?? `${p.title} | ${s.businessName}`} description={p.seo?.description ?? p.heroLead} enroll={{ slug: p.slug, price: p.price, now }} jsonld={ld}>
   <div class="hero2">
     <div class="w">
       <div class="hero-copy">
         <p class="sx-k">{p.eyebrow}</p>
         <h1>{p.heroBefore} <em>{p.heroHighlight}</em>{p.heroAfter && <> {p.heroAfter}</>}</h1>
         <p class="lead">{p.heroLead}</p>
-        <div class="pr">{p.heroMeta} · <b>₹{p.price.toLocaleString('en-IN')}</b></div>
+        <div class="pr">{p.heroMeta} · <b data-m={p.price} set:html={priceHtml(p.price, offer)} /></div>
         <div class="cta">
           <a class="btn btn-p glow" href={enrol}>{p.primaryLabel}</a>
           <a class="btn btn-o" href={second.href} {...(second.ext ? { target: '_blank', rel: 'noopener' } : {})}>{p.secondaryLabel}</a>
@@ -39,7 +43,9 @@ const ld = [
   </div>
 
   {p.inLadder && <Ladder programs={programs} current={p.slug} />}
-  <ProgramNarrative n={n} p={p} s={s} />
+  <ProgramNarrative n={n} p={p} s={s} offer={offer} />
+
+  <Testimonials items={reviews} min={1} heading="Words from our mothers" />
 
   {faqs.length > 0 && (
     <section class="sx">

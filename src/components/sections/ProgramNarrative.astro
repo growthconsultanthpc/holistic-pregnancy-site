@@ -2,11 +2,11 @@
 // Renders the fixed-order narrative slots from src/client/programs/<slug>.ts (client copy, G37) plus the price card.
 // Strings may contain inline <b>/<em>/<i> (trusted copy kept in code), hence set:html.
 import Stats from './Stats.astro'
-const { n, p, s } = Astro.props
+import { priceHtml } from '../../lib/offer'
+const { n, p, s, offer } = Astro.props
 const enrol = `/enroll/${p.slug}/`
 const second = p.secondaryType === 'calendly' ? { href: s.calendlyUrl, ext: true } : { href: '/contact/', ext: false }
 const band = (b?: boolean) => `sx${b ? ' blush' : ''}`
-const price = `₹${p.price.toLocaleString('en-IN')}`
 ---
 <section class={band(n.intro.band)}><div class="w sx-split">
   <div class="reveal">
@@ -54,7 +54,7 @@ const price = `₹${p.price.toLocaleString('en-IN')}`
   </div>
   <div class="pc reveal" id="price" style="--i:1">
     <h3>{p.title}</h3>
-    <div class="big">{price}</div>
+    <div class="big" data-m={p.price} set:html={priceHtml(p.price, offer)} />
     <ul class="ck">{p.priceBullets?.map((b: string) => <li>{b}</li>)}</ul>
     <a class="btn btn-p" href={enrol}>{p.primaryLabel}</a>
     <a class="btn btn-o pc-dc" href={second.href} {...(second.ext ? { target: '_blank', rel: 'noopener' } : {})}>{p.secondaryLabel}</a>

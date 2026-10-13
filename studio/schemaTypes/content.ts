@@ -26,6 +26,10 @@ export const testimonial = defineType({
     defineField({name: 'quote', type: 'text', rows: 4, validation: (r) => r.required().max(400).warning()}),
     defineField({name: 'name', type: 'string', validation: (r) => r.required()}),
     defineField({name: 'stage', title: 'Stage / programme (optional)', type: 'string', description: 'e.g. Mother of two, joined Pathshala', validation: limit(60)}),
+    defineField({name: 'detail', title: 'Longer story (optional, shown on the testimonials page)', type: 'text', rows: 5, validation: limit(900)}),
+    defineField({name: 'programmes', title: 'Programmes (shows on those programme pages)', type: 'array', of: [defineArrayMember({type: 'string'})], options: {list: ['preconception', 'dincharya', 'power-of-11', 'pathshala']}}),
+    defineField({name: 'visible', title: 'Show on the website', type: 'boolean', initialValue: true}),
+    defineField({name: 'showOnHome', title: 'Show on the home page', type: 'boolean', initialValue: true}),
     defineField({name: 'videoUrl', title: 'Video link (optional)', type: 'url', description: 'YouTube or Shorts link. Videos are never uploaded here.'}),
     defineField({
       name: 'isPlaceholder',
@@ -109,6 +113,8 @@ export const post = defineType({
       type: 'array',
       of: [
         ...(portableText().of as any[]),
+        defineArrayMember({type: 'object', name: 'pullQuote', title: 'Pull quote', fields: [defineField({name: 'text', type: 'text', rows: 3, validation: (r) => r.required()}), defineField({name: 'by', type: 'string'})], preview: {select: {title: 'text'}}}),
+        defineArrayMember({type: 'object', name: 'callout', title: 'Callout box', fields: [defineField({name: 'title', type: 'string'}), defineField({name: 'text', type: 'text', rows: 3, validation: (r) => r.required()})], preview: {select: {title: 'title', subtitle: 'text'}}}),
         defineArrayMember({
           type: 'image',
           options: {hotspot: true},
@@ -116,6 +122,7 @@ export const post = defineType({
         }),
       ],
     }),
+    defineField({name: 'featured', title: 'Showcase article (one is picked at random from these)', type: 'boolean', initialValue: false}),
     defineField({
       name: 'isPlaceholder',
       title: 'Dummy post (staging only)',

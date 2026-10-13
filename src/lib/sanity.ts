@@ -29,6 +29,8 @@ export function pic(i: Img, widths: number[], sizes: string) {
   return {src: src(ws[ws.length - 1]), srcset: ws.map((x) => `${src(x)} ${x}w`).join(', '), sizes, alt: i.alt ?? '', width: w, height: h}
 }
 
+export const offerApi = `https://${env.SANITY_PROJECT_ID}.api.sanity.io/v2025-01-01/data/query/${env.SANITY_DATASET || 'production'}?query=` + encodeURIComponent('*[_id=="offer"][0]{enabled,discountPercent,code,endsAt}')
+
 export const q = (groq: string, params: Record<string, unknown> = {}) => client.fetch(groq, params)
 
 const memo = <T,>(fn: () => Promise<T>) => { let p: Promise<T> | undefined; return () => (p ??= fn()) }
@@ -38,7 +40,8 @@ export const getSite = memo(() =>
     "postCount": count(*[_type=="post" && (isPlaceholder != true || $ph)]),
     "settings": *[_id=="siteSettings"][0],
     "session": *[_id=="nextSession"][0],
-    "programs": *[_type=="program"]|order(order){title, "slug": slug.current, tag, price, cardMeta, cardImage, cardBullets, signature, inLadder, ladderNote}
+    "offer": *[_id=="offer"][0],
+    "programs": *[_type=="program"]|order(order){title, "slug": slug.current, tag, price, crmLabel, cardMeta, cardImage, cardBullets, signature, inLadder, ladderNote}
   }`, {ph: showPlaceholders}),
 )
 

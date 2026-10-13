@@ -1,0 +1,94 @@
+---
+import Site from '../layouts/Site.astro'
+import { getSite, fill, wa } from '../lib/sanity'
+const { settings: s } = await getSite()
+const endpoint = import.meta.env.PUBLIC_REFERRAL_ENDPOINT || import.meta.env.PUBLIC_LEAD_ENDPOINT?.replace('submit-lead.php', 'create-referral.php')
+const tpl = s.referralMessage ?? 'Hi , I would like to refer you for a program at Holistic Pregnancy. Use this referral code {code} at {site} for their programs.'
+const site = Astro.site!.origin + '/'
+const faqs: [string, string][] = [
+  ['Who can refer?', 'Anyone. You do not need to be in a program to refer a friend.'],
+  ['I have not joined a program. What do I get?', 'When your friend enrolls, you get a complimentary meditation session with us. Our team will reach out on WhatsApp to schedule it at a time that suits you.'],
+  ['When do I get my reward?', 'Once your friend’s enrolment and payment are confirmed, our team applies ₹1,000 off your course, or schedules your complimentary meditation session, and lets you know on WhatsApp.'],
+  ['Which programs count?', 'All of them. Your friend can join any of our programs.'],
+  ['How does my friend use my code?', 'If they open your link, the code is added automatically. Otherwise they can type it in the “Referral code” box on the enrol form, or mention it when our team calls.'],
+]
+---
+<Site title={`Refer a friend | ${s.businessName}`} description="Share the journey, and be rewarded." >
+  <div class="hero2 c"><div class="w"><div class="hero-copy">
+    <p class="sx-k">Refer a friend</p>
+    <h1>Share the journey, <em>and be rewarded</em></h1>
+    <p class="lead">Know someone planning a baby or expecting one? Send them your referral code. When they enroll in any {s.businessName} program, we say thank you:</p>
+    <div class="grid g4" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));max-width:640px;margin:18px auto 0">
+      <div class="cd mid"><h3>₹1,000 off</h3><p>your course, if you are in a program or joining one</p></div>
+      <div class="cd mid"><h3>A complimentary meditation session</h3><p>with us, if you have not joined a program yet</p></div>
+    </div>
+  </div></div></div>
+
+  <section class="sx"><div class="w">
+    <div class="rf-card" data-referral data-endpoint={endpoint} data-tpl={tpl} data-site={site}>
+      <div class="t reveal"><h2>Create your referral code</h2></div>
+      <form class="form" novalidate data-ref-form>
+        <div class="hp" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off" /></label></div>
+        <label>Your name<input name="name" required autocomplete="name" /></label>
+        <label>Your WhatsApp number<input name="phone" type="tel" required autocomplete="tel" inputmode="tel" placeholder="+91" /></label>
+        <label class="f">Are you in a {s.businessName} program?<select name="in_program" required><option value="">Select</option><option value="Yes">Yes, I am in one or joining one</option><option value="Not yet">Not yet</option></select></label>
+        <label class="f cons"><input type="checkbox" name="consent" value="1" required /> <span>I agree to be contacted on WhatsApp about my reward, and to the <a href="/privacy/" target="_blank">Privacy Policy</a>.</span></label>
+        <p class="err f" role="alert" data-err></p>
+        <button class="btn btn-p f" type="submit">Get my referral code</button>
+        <p class="note f">Use your WhatsApp number (the one you enrolled with, if you have), so our team can reach you with your reward.</p>
+      </form>
+      <div data-result hidden>
+        <p class="sx-k" style="text-align:center">Your referral code</p>
+        <div class="rf-code" data-code></div>
+        <p class="sx-k" style="text-align:center">Referral message</p>
+        <div class="rf-msg" data-msg></div>
+        <div class="rf-btns">
+          <button type="button" class="btn btn-o" data-copy>Copy message</button>
+          <a class="btn btn-p" data-share target="_blank" rel="noopener">Share on WhatsApp</a>
+        </div>
+        <p class="rf-note">Friends can also type your code on the enrol form. <button type="button" class="hp-rm" data-again>Create another code</button></p>
+      </div>
+    </div>
+  </div></section>
+
+  <section class="sx band"><div class="w">
+    <div class="t reveal"><h2>Referral questions</h2></div>
+    <div class="faq reveal">{faqs.map(([qq, a], i) => <details open={i === 0}><summary>{qq}</summary><p>{a}</p></details>)}</div>
+  </div></section>
+</Site>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-referral]')!
+  const form = root.querySelector<HTMLFormElement>('[data-ref-form]')!
+  const res = root.querySelector<HTMLElement>('[data-result]')!
+  const err = form.querySelector<HTMLElement>('[data-err]')!
+  const MSG: Record<string, string> = { name: 'your name', phone: 'a valid phone number', in_program: 'your answer', consent: 'your consent' }
+  function show(code: string) {
+    const msg = root.dataset.tpl!.replace('{code}', code).replace('{site}', root.dataset.site!)
+    root.querySelector('[data-code]')!.textContent = code
+    root.querySelector('[data-msg]')!.textContent = msg
+    root.querySelector<HTMLAnchorElement>('[data-share]')!.href = 'https://wa.me/?text=' + encodeURIComponent(msg)
+    root.dataset.msgText = msg
+    form.hidden = true; res.hidden = false
+    try { localStorage.setItem('hpc_mycode', code) } catch {}
+  }
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault(); err.textContent = ''
+    if (!form.checkValidity()) { form.reportValidity(); return }
+    const btn = form.querySelector<HTMLButtonElement>('button[type=submit]')!, label = btn.textContent
+    btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Creating…'
+    try {
+      const r = await fetch(root.dataset.endpoint!, { method: 'POST', body: new FormData(form) })
+      const j = await r.json().catch(() => ({}))
+      if (r.ok && j.ok) { show(j.code); return }
+      err.textContent = j.fields ? 'Please check ' + j.fields.map((x: string) => MSG[x] || x).join(', ') + '.' : r.status === 429 ? 'Too many tries. Please wait a few minutes.' : 'We could not create your code just now. Please try again, or message us on WhatsApp.'
+    } catch { err.textContent = 'We could not reach the server. Please try again, or message us on WhatsApp.' }
+    finally { btn.disabled = false; btn.textContent = label }
+  })
+  root.querySelector('[data-copy]')!.addEventListener('click', async (e) => {
+    const b = e.currentTarget as HTMLButtonElement
+    try { await navigator.clipboard.writeText(root.dataset.msgText!); b.textContent = 'Copied ✓' } catch { b.textContent = 'Select the text above to copy' }
+    setTimeout(() => (b.textContent = 'Copy message'), 2200)
+  })
+  root.querySelector('[data-again]')!.addEventListener('click', () => { res.hidden = true; form.hidden = false; form.reset() })
+</script>

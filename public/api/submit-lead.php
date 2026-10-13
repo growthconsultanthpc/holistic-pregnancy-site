@@ -37,7 +37,7 @@ $hits[] = time(); file_put_contents($rl, json_encode(array_values($hits)));
 // Allowed values mirror Airtable options and the Sanity-locked lists (PRD G18/G23).
 const STAGES = ['Planning a pregnancy', 'Currently pregnant', 'Not sure yet'];
 const TYPES = ['Free session', 'Enrol', 'Contact'];
-const PROGRAMMES = ['preconception' => 'Pre-Conception Program', 'dincharya' => '21 Days of Dinacharya', 'power-of-11' => 'Power of 11', 'pathshala' => 'Holistic Paatshala'];
+const PROGRAMMES = ['preconception' => 'Preconception Program', 'dincharya' => '21 Days of Dincharya', 'power-of-11' => 'Power of 11', 'pathshala' => 'Holistic Pathshala'];
 const TIMES = ['Morning', 'Afternoon', 'Evening'];
 
 $p = fn(string $k, int $max = 200): string => mb_substr(trim((string) ($_POST[$k] ?? '')), 0, $max);
@@ -57,6 +57,13 @@ $time = $p('call_time'); if ($time !== '' && !in_array($time, TIMES, true)) $err
 if (($_POST['consent'] ?? '') !== '1') $err[] = 'consent';
 if ($err) out(400, ['ok' => false, 'error' => 'invalid', 'fields' => $err]);
 
+// v3 (G46): referral code + offer. The code is checked against the Referrals base; an unknown code is simply not credited.
+$refUsed = strtoupper($p('ref_code', 20)); $referrer = ''; $refRec = null;
+if ($refUsed !== '' && ref_ready($c)) {
+  try { $r = $refRec = ref_find($c, 'Code', $refUsed); $referrer = $r ? (string) ($r['fields']['Name'] ?? '') : ''; if (!$r) $refUsed = ''; } catch (Throwable $e) { $referrer = ''; }
+} elseif ($refUsed !== '' && !preg_match('/^[A-Z]{1,5}-[A-Z2-9]{4}$/', $refUsed)) $refUsed = '';
+$offer = $p('offer_code', 20); $price = $p('price_quoted', 12);
+
 $now = gmdate('c');
 [$subject, $text] = confirmation($type, $name, $prog);
 $emailed = send_mail($c, $email, $subject, $text);
@@ -70,10 +77,13 @@ $fields = array_filter([
   'First submitted' => $now, 'Last submitted' => $now,
 ], fn($v) => $v !== '' && $v !== null);
 $fields['Confirmation email sent'] = $emailed;
+// Only written once the four v3 columns exist in Airtable (set 'airtable_v3_fields' => true in hpc-config.php).
+if (!empty($c['airtable_v3_fields'])) $fields += array_filter(['Referral code used' => $refUsed, 'Referred by' => $referrer, 'Offer applied' => $offer, 'Price quoted' => $price], fn($v) => $v !== '');
 $log = gmdate('Y-m-d H:i') . " UTC · $type" . ($prog ? " · $prog" : '') . ' · ' . ($p('utm_source', 100) ?: 'direct');
 
 try {
-  at_save_lead($c, $fields, $log);
+  $saved = at_save_lead($c, $fields, $log);
+  if ($refRec && !$saved['repeat']) { try { ref_req($c, 'PATCH', '/' . $refRec['id'], ['fields' => ['Uses' => ((int) ($refRec['fields']['Uses'] ?? 0)) + 1, 'Reward status' => 'Reward due']]); } catch (Throwable $e) {} }
   out(200, ['ok' => true]);
 } catch (Throwable $e) {
   // Never lose a lead: local log + alert the team. Success only if captured somewhere.

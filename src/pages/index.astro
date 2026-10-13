@@ -9,15 +9,15 @@ import FreeSession from '../components/sections/FreeSession.astro'
 import FAQ from '../components/sections/FAQ.astro'
 import { getSite, pic, q, showPlaceholders } from '../lib/sanity'
 
-const { settings, session, programs } = await getSite()
+const { settings, session, programs, offer } = await getSite()
 const page = await q(`*[_id=="homePage"][0]{..., chooser[]{label, "slugs": programmes[]->slug.current}, faqs[]->{question, answer}}`)
-const testimonials = await q(`*[_type=="testimonial" && (isPlaceholder != true || $ph)]|order(_createdAt){quote, name, stage, videoUrl}`, { ph: showPlaceholders })
+const testimonials = await q(`*[_type=="testimonial" && visible != false && showOnHome != false && (isPlaceholder != true || $ph)]|order(_createdAt){quote, name, stage, videoUrl}`, { ph: showPlaceholders })
 const og = pic(page.seo?.image, [1200], '1200px')?.src
 ---
 <Site title={page.seo?.title ?? settings.businessName} description={page.seo?.description} image={og}>
-  <Hero page={page} calendly={settings.calendlyUrl} />
+  <Hero page={page} calendly={settings.calendlyUrl} offer={offer} />
   <ProofStrip s={settings} items={page.trustItems} />
-  <ProgramCards page={page} programs={programs} />
+  <ProgramCards page={page} programs={programs} offer={offer} />
   <Founder page={page} />
   <Testimonials items={testimonials} />
   <FreeSession page={page} session={session} />

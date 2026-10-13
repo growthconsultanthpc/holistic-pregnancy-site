@@ -1,7 +1,8 @@
 ---
 // Announcement bar (G39): one message at a time, fading. Dark in both themes. First message shown without JS.
 import { sessionLabel } from '../../lib/sanity'
-const { s, session } = Astro.props
+import { isLive } from '../../lib/offer'
+const { s, session, offer } = Astro.props
 const live = s.barShowDate ? sessionLabel(session) : null
 const base = (s.barMessages ?? []).filter((m: any) => m.text)
 // A live session date becomes the first message and replaces the static free-session one.
@@ -9,13 +10,15 @@ const msgs = [
   ...(live ? [{ text: `Free online session on ${live.text}.`, linkLabel: base.find((m: any) => m.linkUrl === '/free-session/')?.linkLabel ?? 'Join Free Session', linkUrl: '/free-session/' }] : []),
   ...base.filter((m: any) => !(live && m.linkUrl === '/free-session/')),
 ]
+const offerMsg = offer?.barText ? { text: offer.barText, linkLabel: 'View offer', linkUrl: '/offer/', offer: true } : null
 const ext = (u: string) => /^https?:/.test(u)
 ---
-{s.barEnabled && msgs.length > 0 && (
+{s.barEnabled && (msgs.length > 0 || offerMsg) && (
   <div class="bar" role="region" aria-label="Announcements">
     <div class="bar-msgs" aria-live="off">
+      {offerMsg && <span class={`bar-i offer-on${isLive(offer) ? ' on' : ''}`} hidden={!isLive(offer)}>{offerMsg.text}<a href="/offer/">View offer</a></span>}
       {msgs.map((m: any, i: number) => (
-        <span class={`bar-i${i === 0 ? ' on' : ''}`}>
+        <span class={`bar-i${i === 0 && !isLive(offer) ? ' on' : ''}`}>
           {m.text}
           {m.linkLabel && m.linkUrl && <a href={m.linkUrl} {...(ext(m.linkUrl) ? { target: '_blank', rel: 'noopener' } : {})}>{m.linkLabel}</a>}
         </span>

@@ -9,10 +9,10 @@ const php = readFileSync('public/api/submit-lead.php', 'utf8')
 const map = php.match(/const PROGRAMMES = \[(.*?)\];/s)?.[1] ?? ''
 const accepted = [...map.matchAll(/'[^']+'\s*=>\s*'([^']+)'/g)].map((m) => m[1])
 const client = createClient({ projectId, dataset: process.env.SANITY_DATASET || 'production', apiVersion: '2025-01-01', useCdn: false, token: process.env.SANITY_READ_TOKEN || undefined })
-const titles = await client.fetch('*[_type=="program"].title')
-const bad = titles.filter((t) => !accepted.includes(t))
+const titles = await client.fetch('*[_type=="program"].crmLabel')
+const bad = titles.filter((t) => !t || !accepted.includes(t))
 if (bad.length) {
-  console.error(`\ncheck-names FAILED: Sanity programme name(s) not accepted by public/api/submit-lead.php: ${bad.map((b) => `"${b}"`).join(', ')}\nAccepted: ${accepted.join(' | ')}\nUpdate the PHP map and the Airtable "Programme" options together, then rebuild.\n`)
+  console.error(`\ncheck-names FAILED: Sanity programme crmLabel(s) not accepted by public/api/submit-lead.php: ${bad.map((b) => `"${b}"`).join(', ')}\nAccepted: ${accepted.join(' | ')}\nUpdate the PHP map and the Airtable "Programme" options together, then rebuild.\n`)
   process.exit(1)
 }
 console.log(`check-names: OK (${titles.length} programmes match the PHP list)`)

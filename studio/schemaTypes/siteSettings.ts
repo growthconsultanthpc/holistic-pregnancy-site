@@ -107,6 +107,15 @@ export const siteSettings = defineType({
       initialValue: 'Payment is collected offline. Our team will share the details on the call.',
     }),
 
+    defineField({
+      name: 'referralMessage',
+      title: 'Refer-a-friend: message people copy and share',
+      type: 'text',
+      rows: 3,
+      group: 'misc',
+      initialValue: 'Hi , I would like to refer you for a program at Holistic Pregnancy. Use this referral code {code} at {site} for their programs.',
+      description: '{code} becomes the person’s code, {site} the website address. Keep both.',
+    }),
     defineField({name: 'notFoundHeading', title: '404 page: heading', type: 'string', group: 'misc', initialValue: "We couldn't find that page."}),
     defineField({name: 'notFoundText', title: '404 page: text', type: 'text', rows: 2, group: 'misc', initialValue: 'Let us help you find the right programme.'}),
     defineField({name: 'disclaimer', title: 'Medical disclaimer line (programme pages)', type: 'text', rows: 2, group: 'misc', initialValue: 'Holistic Pregnancy is educational support and works alongside, not instead of, care from your doctor.'}),
@@ -154,4 +163,26 @@ export const nextSession = defineType({
     select: {mode: 'mode', at: 'startsAt'},
     prepare: ({mode, at}) => ({title: 'Next free session', subtitle: mode === 'date' && at ? new Date(at).toLocaleString('en-IN', {timeZone: 'Asia/Kolkata'}) : 'No date'}),
   },
+})
+
+// v3 (G45): one switch for the offer. Prices on the site = full price (programme) minus this %, rounded.
+export const offer = defineType({
+  name: 'offer',
+  title: 'Offer',
+  type: 'document',
+  fields: [
+    defineField({name: 'enabled', title: 'Show the offer on the website', type: 'boolean', initialValue: false, description: 'OFF = full prices everywhere and the hero shows the founder note instead.'}),
+    defineField({name: 'discountPercent', title: 'Discount (%)', type: 'number', initialValue: 25, validation: (r) => r.required().integer().min(1).max(90)}),
+    defineField({name: 'code', title: 'Offer code (shown to visitors, saved with the lead)', type: 'string', initialValue: 'OFFER25', validation: limit(16)}),
+    defineField({name: 'endsAt', title: 'Offer ends (India time, optional)', type: 'datetime', description: 'After this moment the site goes back to full prices by itself. Leave empty for no end.'}),
+    defineField({name: 'tag', title: 'Small line on the hero box', type: 'string', initialValue: '✦ Limited-time offer', validation: limit(30)}),
+    defineField({name: 'subline', title: 'Line under the discount', type: 'string', initialValue: 'on all our programs', validation: limit(40)}),
+    defineField({name: 'barText', title: 'Announcement bar message', type: 'string', initialValue: 'Limited-time offer: 25% off all programs', validation: limit(90)}),
+    defineField({name: 'pageTitle', title: 'Offer page: heading', type: 'string', initialValue: 'A little help to begin your journey', validation: limit(70)}),
+    defineField({name: 'pageIntro', title: 'Offer page: intro', type: 'text', rows: 3, validation: limit(300)}),
+    defineField({name: 'endedText', title: 'Offer page: text after the offer ends', type: 'text', rows: 2, initialValue: 'This offer has ended. Our programs are still open, talk to us and we will help you choose.', validation: limit(200)}),
+    defineField({name: 'blurb', title: 'Shown instead when the offer is OFF (founder note, italic)', type: 'text', rows: 3, validation: limit(220)}),
+    defineField({name: 'blurbBy', title: 'Founder note: signed by', type: 'string', initialValue: 'Geetha Bafna', validation: limit(40)}),
+  ],
+  preview: {select: {on: 'enabled', pct: 'discountPercent'}, prepare: ({on, pct}) => ({title: 'Offer', subtitle: on ? `ON · ${pct}% off` : 'OFF'})},
 })

@@ -1,7 +1,8 @@
 ---
 import Icon from '../ui/Icon.astro'
 import { pic } from '../../lib/sanity'
-const { page, calendly } = Astro.props
+import OfferBox from './OfferBox.astro'
+const { page, calendly, offer } = Astro.props
 const img = pic(page.heroImage, [260, 380, 520], '(max-width: 860px) 100vw, 360px')
 const badges = (page.heroBadges ?? []).slice(0, 3)
 const icons = [['leaf', ''], ['heart', 'pk'], ['lotus', '']]
@@ -11,6 +12,7 @@ const icons = [['leaf', ''], ['heart', 'pk'], ['lotus', '']]
     <div class="hero-copy">
       <h1>{page.heroBefore} <em class="hl">{page.heroHighlight}</em> {page.heroAfter}</h1>
       <p class="lead">{page.heroLead}</p>
+      <OfferBox offer={offer} />
       <div class="cta">
         <a class="btn btn-p" href="#programs">{page.heroPrimaryLabel}</a>
         <a class="btn btn-o" href={calendly} target="_blank" rel="noopener">{page.heroSecondaryLabel}</a>

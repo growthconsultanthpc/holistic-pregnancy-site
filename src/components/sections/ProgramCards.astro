@@ -1,7 +1,8 @@
 ---
 import Steps from './Steps.astro'
 import { pic } from '../../lib/sanity'
-const { page, programs } = Astro.props
+import { priceHtml } from '../../lib/offer'
+const { page, programs, offer } = Astro.props
 ---
 <section id="programs">
   <div class="w">
@@ -21,7 +22,7 @@ const { page, programs } = Astro.props
             <div class="bd">
               <span class="tag" data-base={p.tag}>{p.tag}</span>
               <h3>{p.title}</h3>
-              <div class="price"><b>₹{p.price?.toLocaleString('en-IN')}</b><span>{p.cardMeta}</span></div>
+              <div class="price"><b data-m={p.price} set:html={priceHtml(p.price, offer)} /><span>{p.cardMeta}</span></div>
               <ul class="ck">{p.cardBullets?.map((b: string) => <li>{b}</li>)}</ul>
               <a class="btn btn-p" href={`/${p.slug}/`}>View Program</a>
             </div>

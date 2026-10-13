@@ -5,6 +5,9 @@ return [
   'airtable_token'   => '',            // Personal Access Token (data.records:read/write, this base only)
   'airtable_base_id' => '',            // app...
   'airtable_table'   => 'Leads',
+  'airtable_ref_base_id' => '',        // base holding the Referrals table (same base is fine)
+  'airtable_ref_table'   => 'Referrals',
+  'airtable_v3_fields'   => true,      // set true once Leads has Referral code used / Referred by / Offer applied / Price quoted
   'resend_api_key'   => '',            // re_...
   'resend_from'      => 'Holistic Pregnancy <hello@YOUR-VERIFIED-DOMAIN>',
   'team_alert_email' => '',            // gets an email if an Airtable write fails

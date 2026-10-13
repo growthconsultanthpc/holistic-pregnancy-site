@@ -30,3 +30,4 @@ public/api/*.log
 .vscode/
 
 *.zip
+backup*.tar.gz

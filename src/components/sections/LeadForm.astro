@@ -11,6 +11,7 @@ const endpoint = import.meta.env.PUBLIC_LEAD_ENDPOINT
   <input type="hidden" name="type" value={type} />
   <input type="hidden" name="programme" value={programme} />
   <input type="hidden" name="utm_source" /><input type="hidden" name="utm_medium" /><input type="hidden" name="utm_campaign" /><input type="hidden" name="landing_page" />
+  <input type="hidden" name="offer_code" /><input type="hidden" name="price_quoted" />
   <div class="hp" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off" /></label></div>
   <label>Name<input name="name" required autocomplete="name" placeholder="Your name" /></label>
   <label>Phone / WhatsApp<input name="phone" type="tel" required autocomplete="tel" inputmode="tel" placeholder="+91" /></label>
@@ -20,6 +21,9 @@ const endpoint = import.meta.env.PUBLIC_LEAD_ENDPOINT
   </label>
   {extended && <label class="f">Question (optional)<textarea name="question" rows="3" placeholder="Your question"></textarea></label>}
   {(extended || callTime) && <label class="f">{callTime ? 'Best time to call' : 'Preferred call time (optional)'}<select name="call_time"><option value="">Select</option>{CALL_TIMES.map(([v, l]) => <option value={v}>{l}</option>)}</select></label>}
+  {type === 'Enrol'
+    ? <label class="f">Referral code (optional)<input name="ref_code" maxlength="10" autocomplete="off" placeholder="e.g. PRIYA-7K2M" style="text-transform:uppercase" /></label>
+    : <input type="hidden" name="ref_code" />}
   <label class="f cons"><input type="checkbox" name="consent" value="1" required /> <span>I agree to be contacted by phone, WhatsApp and email about my request, and to the <a href="/privacy/" target="_blank">Privacy Policy</a>.</span></label>
   <p class="err f" role="alert" data-err></p>
   <button class="btn btn-p f" type="submit">{button}</button>
@@ -39,13 +43,26 @@ const endpoint = import.meta.env.PUBLIC_LEAD_ENDPOINT
     }
     return a
   }
+  // A friend's code: from this page's ?ref=, else the one remembered earlier this session
+  const refSaved = () => {
+    const u = new URLSearchParams(location.search).get('ref') || ''
+    if (/^[A-Za-z]{1,5}-[A-Za-z0-9]{4}$/.test(u)) return u.toUpperCase()
+    try { return sessionStorage.getItem('hpc_ref') || '' } catch { return '' }
+  }
   const MSG: Record<string, string> = { name: 'your name', phone: 'a valid phone number', email: 'a valid email', stage: 'your stage', consent: 'your consent' }
   document.querySelectorAll<HTMLFormElement>('form[data-lead-form]').forEach((f) => {
+    const rc = f.elements.namedItem('ref_code') as HTMLInputElement | null
+    if (rc && !rc.value) rc.value = refSaved()
     f.addEventListener('submit', async (e) => {
       e.preventDefault()
       const err = f.querySelector<HTMLElement>('[data-err]')!, btn = f.querySelector<HTMLButtonElement>('button[type=submit]')!
       err.textContent = ''
       if (!f.checkValidity()) { f.reportValidity(); return }
+      // Offer in force right now + the price the visitor was shown (informational; the team confirms the real amount)
+      const d = document.documentElement.dataset
+      ;(f.elements.namedItem('offer_code') as HTMLInputElement).value = d.offerCode || ''
+      const full = Number(document.querySelector<HTMLElement>('.co-tot [data-m]')?.dataset.m)
+      ;(f.elements.namedItem('price_quoted') as HTMLInputElement).value = full ? String(d.offerPct ? Math.round(full * (1 - Number(d.offerPct) / 100)) : full) : ''
       const a = attribution()
       for (const [k, v] of Object.entries(a)) { const i = f.elements.namedItem(k) as HTMLInputElement | null; if (i) i.value = v }
       const label = btn.textContent

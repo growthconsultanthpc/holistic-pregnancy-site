@@ -37,7 +37,7 @@ export const program = defineType({
     defineField({name: 'order', title: 'Order on the site (1 = first)', type: 'number', group: 'card', validation: (r) => r.required().integer().min(1)}),
     defineField({name: 'signature', title: 'Show the "★ Our signature program" badge', type: 'boolean', group: 'card', initialValue: false}),
     defineField({name: 'tag', title: 'Small tag on the card', type: 'string', group: 'card', validation: limit(32)}),
-    defineField({name: 'price', title: 'Price (₹)', type: 'number', group: 'card', validation: (r) => r.required().integer().min(0)}),
+    defineField({name: 'price', title: 'Full price (₹, before any offer)', type: 'number', group: 'card', validation: (r) => r.required().integer().min(0)}),
     defineField({name: 'cardMeta', title: 'Line under the price on the card', type: 'string', group: 'card', description: 'e.g. 21 weekly sessions', validation: limit(40)}),
     {...strings('cardBullets', 'Card bullets (2 short lines)', {max: 2, len: 44}), group: 'card'},
     {...image('cardImage', 'Card image', 'Shown on the home page card.'), group: 'card'},

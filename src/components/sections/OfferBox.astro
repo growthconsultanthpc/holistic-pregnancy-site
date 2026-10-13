@@ -1,0 +1,26 @@
+---
+// Hero box: the offer when it is live, otherwise the founder's note (same box). Both are rendered; the live script
+// swaps them if the offer is switched in Sanity after this build.
+import { isLive } from '../../lib/offer'
+const { offer } = Astro.props
+const on = isLive(offer)
+const left = on && offer.endsAt ? Math.max(0, new Date(offer.endsAt).getTime() - Date.now()) : 0
+const parts = [['days', Math.floor(left / 864e5)], ['hrs', Math.floor(left / 36e5) % 24], ['min', Math.floor(left / 6e4) % 60], ['sec', Math.floor(left / 1e3) % 60]]
+---
+{offer && (
+  <>
+    <a class="cp-prem offer-on" href="/offer/" hidden={!on}>
+      <span class="cpp-l"><span class="cpp-tag">{offer.tag}</span><span class="cpp-big"><span data-off-pct>{offer.discountPercent}</span>% off</span><span class="cpp-sub">{offer.subline}</span></span>
+      <span class="cpp-r">
+        {offer.endsAt && <><span class="cpp-ends">Offer ends in</span><span class="cpp-cd" data-cd data-ends={offer.endsAt}>{parts.map(([l, v]) => <span><b>{String(v).padStart(2, '0')}</b><i>{l}</i></span>)}</span></>}
+        <span class="cpp-go">View offer →</span>
+      </span>
+    </a>
+    {offer.blurb && (
+      <figure class="cp-prem note offer-off" hidden={on}>
+        <blockquote><em>{offer.blurb}</em></blockquote>
+        {offer.blurbBy && <figcaption>{offer.blurbBy}</figcaption>}
+      </figure>
+    )}
+  </>
+)}

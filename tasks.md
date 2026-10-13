@@ -2,6 +2,21 @@
 
 Legend: `[ ]` todo · `[~]` in progress · `[!]` blocked (needs input, see PRD §11). `G#` = `docs/decision_log.md`. Detail lives in `docs/PRD.md`.
 
+## v3 client revision (G43-G44, `docs/v3_scope.md`) — analysis done, nothing built yet
+- [!] **Decisions pending** (see v3_scope.md §5 and the table in chat): email tool for session emails; programme naming (Pathshala/Paatshala, Preconception/Pre-Conception); is "session requests" (brief change 4) still wanted; popup/countdown/spots policy; tracking pixels + consent; referral code scheme; where videos appear
+- [ ] P1 Re-baseline content to v3 (regenerate programme narratives from `reference/v3_design/rendered/`, new home sections, About founder bio, contact email, nav/footer, FAQs); add a locked `crmLabel` per programme so public renames never break the lead table
+- [ ] P2 Sanity schemas: `offer`, `session`, testimonial upgrade (programmes, detail, show/hide, show on home, optional photo/rating), `mantraTrack`, referral + tracking settings, FAQ category (if wanted); retire obsolete fields
+- [ ] P3 Live layer (offer window, countdown, session Upcoming/Past without a rebuild; Sanity CORS origin) + rebuild pipeline (Sanity webhook, nightly) — critical path for "editable without a developer"
+- [ ] P4 Offer system: struck-through prices (cards, hero, price box, enrol, JSON-LD), `/offer/` page + countdown, bar message, popup card, spots badge (manual, true), offer code recorded in Airtable
+- [ ] P5 Sessions: `/sessions/` + per-course block, free-session copy, sign-up form to the second Airtable base, Resend confirmation, client-managed sending of Zoom links
+- [ ] P6 Referral: `/refer/`, server-generated unique codes in Airtable, referral-code field on enrol/enquiry forms
+- [ ] P7 Post-Partum waitlist page + card (lead type Waitlist)
+- [ ] P8 Mantra player (off by default, never autoplays, per-page setting, licence/credit field)
+- [ ] P9 Ad tracking (Meta/Google IDs in Sanity) with a consent decision
+- [ ] P10 Second Airtable base: build prompts, token, fields, interfaces for the team
+- [ ] P11 Admin handover: Studio deployed, 2 admin logins, how-to recordings, the brief's test checklist (rewritten for no checkout), perf budget re-check (popup, countdown, player, pixels)
+- [ ] Merge/deploy of `v2-design` is now superseded by v3: decide whether to merge v2 first (it is verified) or fold into v3
+
 ## v2 design update (G37-G42) — built on branch `v2-design`, NOT merged or deployed
 - [x] Programme pages rebuilt: generic components + `src/client/programs/*.ts` narrative (generated from the client's HTML; text verified identical)
 - [x] `program` schema rebuilt; Sanity migrated by `studio/scripts/migrate-v2.ts` (dataset backup taken first; re-run is a no-op)

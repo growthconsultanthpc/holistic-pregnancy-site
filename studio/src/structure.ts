@@ -1,7 +1,7 @@
 import type {StructureResolver} from 'sanity/structure'
 
 // Locked layout (PRD G18): single pages are fixed documents; programmes and legal pages cannot be added or deleted here.
-export const SINGLETONS = ['siteSettings', 'nextSession', 'homePage', 'aboutPage', 'communityPage', 'contactPage', 'freeSessionPage', 'thankYouPages']
+export const SINGLETONS = ['siteSettings', 'nextSession', 'offer', 'homePage', 'aboutPage', 'communityPage', 'contactPage', 'freeSessionPage', 'thankYouPages']
 export const NO_CREATE = [...SINGLETONS, 'program', 'legalPage']
 export const NO_DELETE = [...NO_CREATE]
 
@@ -12,6 +12,7 @@ export const structure: StructureResolver = (S) =>
     .title('Website content')
     .items([
       single(S, 'nextSession', 'Next free session'),
+      single(S, 'offer', 'Offer & discount'),
       single(S, 'siteSettings', 'Site settings'),
       S.divider(),
       single(S, 'homePage', 'Home page'),

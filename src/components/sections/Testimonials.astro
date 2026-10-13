@@ -1,8 +1,8 @@
 ---
 // Hidden unless 3+ real testimonials are published (G25). Placeholders only count on staging.
-const { items = [], heading = 'Real journeys' } = Astro.props
+const { items = [], heading = 'Real journeys', min = 3 } = Astro.props
 ---
-{items.length >= 3 && (
+{items.length >= min && items.length > 0 && (
   <section>
     <div class="w">
       <div class="t reveal"><h2>{heading}</h2></div>
