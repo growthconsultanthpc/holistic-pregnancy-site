@@ -44,12 +44,13 @@ $p = fn(string $k, int $max = 200): string => mb_substr(trim((string) ($_POST[$k
 $err = [];
 
 $name = $p('name', 100); if (mb_strlen($name) < 2) $err[] = 'name';
-$email = $p('email', 254); if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $err[] = 'email';
+// V4 forms treat email as optional: validate it only when given; no email = no confirmation mail.
+$email = $p('email', 254); if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) $err[] = 'email';
 $digits = preg_replace('/\D/', '', $p('phone', 20));
 if (strlen($digits) === 10) $digits = '91' . $digits;                       // Indian mobile without country code
 if (strlen($digits) < 11 || strlen($digits) > 15) $err[] = 'phone';
 $phone = '+' . $digits;
-$stage = $p('stage'); if (!in_array($stage, STAGES, true)) $err[] = 'stage';
+$stage = $p('stage'); if ($stage !== '' && !in_array($stage, STAGES, true)) $err[] = 'stage';
 $type = $p('type'); if (!in_array($type, TYPES, true)) $err[] = 'type';
 $prog = $p('programme'); $prog = PROGRAMMES[$prog] ?? (in_array($prog, PROGRAMMES, true) ? $prog : '');
 if ($type === 'Enrol' && $prog === '') $err[] = 'programme';
@@ -66,7 +67,7 @@ $offer = $p('offer_code', 20); $price = $p('price_quoted', 12);
 
 $now = gmdate('c');
 [$subject, $text] = confirmation($type, $name, $prog);
-$emailed = send_mail($c, $email, $subject, $text);
+$emailed = $email !== '' && send_mail($c, $email, $subject, $text);
 
 $fields = array_filter([
   'Name' => $name, 'Phone' => $phone, 'Email' => $email, 'Stage' => $stage, 'Lead type' => $type,

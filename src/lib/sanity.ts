@@ -41,7 +41,7 @@ export const getSite = memo(() =>
     "settings": *[_id=="siteSettings"][0],
     "session": *[_id=="nextSession"][0],
     "offer": *[_id=="offer"][0],
-    "programs": *[_type=="program"]|order(order){title, "slug": slug.current, tag, price, crmLabel, cardMeta, cardImage, cardBullets, signature, inLadder, ladderNote}
+    "programs": *[_type=="program"]|order(order){title, "slug": slug.current, tag, price, crmLabel, priceBullets, seo, "faqs": faqs[]->{question, answer}, cardMeta, cardImage, cardBullets, signature, inLadder, ladderNote}
   }`, {ph: showPlaceholders}),
 )
 

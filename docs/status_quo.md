@@ -8,7 +8,7 @@
 ## Decided (see PRD)
 4 programmes · own forms → PHP → Airtable (client-owned) + Resend confirmation · no payments, offline, manual status · Calendly from Sanity · session date in Sanity (auto-revert) · How it works strip · blog built but OFF · dummy-draft legal pages with launch gate · testimonials gated · no preloader, calm motion with Lighthouse kill rule · client's Hostinger; GitHub/Sanity/Resend under Anand's dummy Gmail, handed over on payment.
 
-**v3 (2026-10-13):** built on branch `v3-design` (A-E of the agreed table; F parked): offer system with live refresh, refer-a-friend, blog redesign, the client's v3 page copy, Sanity + Airtable updated (Referrals table, 4 new Leads fields). See `decision_log.md` G45-G48. **Waiting on Anand: add 3 keys to the live `hpc-config.php`, merge, rotate exposed keys.**
+**V4 (2026-10-13):** the site is now the client's V4 design, exact, with Sanity-editable content and our lead pipeline (G49-G51). **v3 (2026-10-13):** built on branch `v3-design` (A-E of the agreed table; F parked): offer system with live refresh, refer-a-friend, blog redesign, the client's v3 page copy, Sanity + Airtable updated (Referrals table, 4 new Leads fields). See `decision_log.md` G45-G48. **Waiting on Anand: add 3 keys to the live `hpc-config.php`, merge, rotate exposed keys.**
 
 **v2 revision (2026-10-06):** built on branch `v2-design` (not merged, not deployed). See `decision_log.md` G37-G42. **Waiting on Anand: rename the 3 Airtable `Programme` options, then merge.**
 

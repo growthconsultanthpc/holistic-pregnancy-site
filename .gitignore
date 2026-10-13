@@ -31,3 +31,4 @@ public/api/*.log
 
 *.zip
 backup*.tar.gz
+V4_HPCWebsite/admin/data/

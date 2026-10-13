@@ -2,19 +2,19 @@
 
 Legend: `[ ]` todo · `[~]` in progress · `[!]` blocked (needs input, see PRD §11). `G#` = `docs/decision_log.md`. Detail lives in `docs/PRD.md`.
 
-## v3 client revision (G43-G48, `docs/v3_scope.md`) — A-E built on branch `v3-design`, NOT merged or deployed; F parked
-- [x] A Referral: `/refer/`, `create-referral.php`, referral field on enrol, credit + `Uses` on lead (tested live, test rows removed)
-- [x] B Offer: Sanity `offer`, live price layer, hero box ↔ Geetha's italic note, `/offer/` (+ ended state), bar message, countdown, offer code + price saved with the lead
-- [x] C Blog redesign + random showcase article (dummy posts, staging only)
-- [x] D Sanity: `offer`, `crmLabel`, testimonial fields, post blocks, referral message, 5 real testimonials, v3 FAQs/images/home copy; CORS origins added (localhost 4321/4322, staging, production)
-- [x] E Airtable: Leads + `Referral code used`, `Referred by`, `Offer applied`, `Price quoted`; new `Referrals` table (same base)
-- [x] Content rebase: programme pages + About = client's v3 HTML (0 text differences), home "Why it matters" + "Garbh Sanskar", founder credentials
-- [!] **Anand (live server):** add to the Hostinger `hpc-config.php`: `'airtable_ref_base_id' => '<same base id>'`, `'airtable_ref_table' => 'Referrals'`, `'airtable_v3_fields' => true` (see `hpc-config.example.php`). Until then referral returns "not ready" and the new lead fields are skipped (safe)
-- [!] **Anand:** merge `v3-design` → `main` (Hostinger deploys main) after checking staging; rotate the exposed Airtable/Resend keys
-- [ ] Ask client: confirm referral reward terms (Terms clause is Draft), offer end date/code, founder note wording (currently her home-page sentence), 5 testimonials' permission to publish with names
-- [ ] Cleanup: delete unused `src/client/programs/` and `ProgramNarrative.astro` (v2 narrative code, superseded; a hook blocked the delete)
-- [ ] Parked (F): Post-Partum waitlist page/card, Sessions page + nav, mantra player, tracking pixels + consent, popup, spots badge, session sign-ups
-- [ ] Sanity webhook → rebuild + Studio deploy still open (the live offer layer covers offer changes only; text changes need a rebuild)
+## V4 (G49-G51): the client's final design, built on branch `v3-design`, NOT merged or deployed
+- [x] 13 V4 pages wrapped (her CSS/markup/scripts) and filled from Sanity: offer + countdown + pop-up + spots, testimonials, sessions list, free-session copy, programmes/prices, referral/tracking/music settings, FAQs, SEO, contact details
+- [x] Leads: every V4 form posts to `submit-lead.php` (Airtable + Resend); checkout with referral code, offer code and price saved; tested live (contact, checkout)
+- [x] Referral: server-made unique codes (`create-referral.php`), `?ref=` link, credit + `Uses` on the referrer; tested live
+- [x] Sanity: offer fields, `liveSession`, `mantraTrack`, tracking/referral/music settings, V4 FAQs, V4 SEO; migrations `migrate-v3/3b/4/4b/4c`
+- [x] Airtable: Leads + 4 fields, `Referrals` table (same base)
+- [x] Legal (4), blog (off by default, redesigned), 404 now use V4's header/footer/styles
+- [!] **Anand (live server):** add to Hostinger `hpc-config.php`: `'airtable_ref_base_id' => '<same base id>'`, `'airtable_ref_table' => 'Referrals'`, `'airtable_v3_fields' => true`. Then merge `v3-design` → `main`, rotate the exposed Airtable/Resend keys
+- [!] **Sanity webhook → GitHub rebuild** still open: only the next session and "spots left" are live; every other Studio edit needs a rebuild (nightly or webhook)
+- [ ] Ask client: referral reward terms (Terms clause is Draft), offer end date/code, five testimonials' permission, Post-Partum copy, mantra recordings licence, ad IDs
+- [ ] Cleanup: `src/_old/`, `src/components/`, `src/layouts/`, `src/styles/`, `src/tokens/` are unused by V4 (a hook blocks deleting); remove when allowed
+- [ ] Accessibility polish on V4 (89-91): contrast of a few small texts, aria-hidden ticker copy, footer heading order
+- [ ] When the client sends V5: re-run `python3 scripts/prepare-v4.py` after replacing `V4_HPCWebsite/`; it stops if a patch no longer matches
 
 ## v2 design update (G37-G42) — built on branch `v2-design`, NOT merged or deployed
 - [x] Programme pages rebuilt: generic components + `src/client/programs/*.ts` narrative (generated from the client's HTML; text verified identical)

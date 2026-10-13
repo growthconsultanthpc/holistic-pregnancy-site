@@ -1,0 +1,16 @@
+---
+// The four legal pages (programme pages are V4 pages now, src/pages/<slug>/index.html.ts).
+import LegalPage from '../components/sections/LegalPage.astro'
+import { q, showPlaceholders } from '../lib/sanity'
+
+export async function getStaticPaths() {
+  const legal = await q(`*[_type=="legalPage"]{title, slug, body, lastUpdated, status, seo}`)
+  // Launch gate (G24): a production build (placeholders off) refuses to run while any legal page is still a draft.
+  const drafts = legal.filter((l: any) => l.status !== 'approved')
+  if (!showPlaceholders && drafts.length && process.env.ALLOW_DRAFT_LEGAL !== 'true')
+    throw new Error(`LAUNCH GATE: legal page(s) still Draft: ${drafts.map((d: any) => d.slug).join(', ')}. Approve them in Sanity, or set ALLOW_DRAFT_LEGAL=true for a non-live test build.`)
+  return legal.map((l: any) => ({ params: { slug: l.slug }, props: { data: l } }))
+}
+const { data } = Astro.props
+---
+<LegalPage page={data} />

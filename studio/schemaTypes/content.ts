@@ -29,7 +29,6 @@ export const testimonial = defineType({
     defineField({name: 'detail', title: 'Longer story (optional, shown on the testimonials page)', type: 'text', rows: 5, validation: limit(900)}),
     defineField({name: 'programmes', title: 'Programmes (shows on those programme pages)', type: 'array', of: [defineArrayMember({type: 'string'})], options: {list: ['preconception', 'dincharya', 'power-of-11', 'pathshala']}}),
     defineField({name: 'visible', title: 'Show on the website', type: 'boolean', initialValue: true}),
-    defineField({name: 'showOnHome', title: 'Show on the home page', type: 'boolean', initialValue: true}),
     defineField({name: 'videoUrl', title: 'Video link (optional)', type: 'url', description: 'YouTube or Shorts link. Videos are never uploaded here.'}),
     defineField({
       name: 'isPlaceholder',

@@ -75,6 +75,13 @@ npx sanity exec scripts/migrate-v2.ts --with-user-token             # v2 migrati
 Programme page narrative text lives in `src/client/programs/<slug>.ts` (code), not Sanity.
 Every `npm run build` first runs `scripts/check-names.mjs`: it fails if a Sanity programme name is not in the PHP accepted list (and so not in Airtable).
 
+## V4 pages
+```bash
+python3 scripts/prepare-v4.py     # V4_HPCWebsite/*  ->  src/v4/*.html (re-run when the client sends a new V4; stops if a patch no longer matches)
+npm run build && npx astro preview --port 4322   # `npm run dev` does not serve the V4 root page; use build + preview
+```
+Studio migrations for V4: `migrate-v4.ts`, `migrate-v4b.ts` (SEO), `migrate-v4c.ts` (FAQs, email); same run line as below.
+
 ## v3 content scripts
 ```bash
 cd studio

@@ -23,6 +23,8 @@ export const structure: StructureResolver = (S) =>
       single(S, 'freeSessionPage', 'Free session page'),
       single(S, 'thankYouPages', 'Thank-you pages'),
       S.divider(),
+      S.documentTypeListItem('liveSession').title('Upcoming sessions'),
+      S.documentTypeListItem('mantraTrack').title('Mantras'),
       S.documentTypeListItem('faq').title('FAQs'),
       S.documentTypeListItem('testimonial').title('Testimonials'),
       S.documentTypeListItem('legalPage').title('Legal pages'),
