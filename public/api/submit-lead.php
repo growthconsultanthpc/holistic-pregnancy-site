@@ -44,8 +44,7 @@ $p = fn(string $k, int $max = 200): string => mb_substr(trim((string) ($_POST[$k
 $err = [];
 
 $name = $p('name', 100); if (mb_strlen($name) < 2) $err[] = 'name';
-// V4 forms treat email as optional: validate it only when given; no email = no confirmation mail.
-$email = $p('email', 254); if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) $err[] = 'email';
+$email = $p('email', 254); if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $err[] = 'email'; // everyone gets a confirmation email
 $digits = preg_replace('/\D/', '', $p('phone', 20));
 if (strlen($digits) === 10) $digits = '91' . $digits;                       // Indian mobile without country code
 if (strlen($digits) < 11 || strlen($digits) > 15) $err[] = 'phone';
@@ -66,8 +65,9 @@ if ($refUsed !== '' && ref_ready($c)) {
 $offer = $p('offer_code', 20); $price = $p('price_quoted', 12);
 
 $now = gmdate('c');
-[$subject, $text] = confirmation($type, $name, $prog);
-$emailed = $email !== '' && send_mail($c, $email, $subject, $text);
+$siteUrl = $c['site_url'] ?? ($origin ?: 'https://' . ($_SERVER['HTTP_HOST'] ?? 'holisticpregnancycourse.com'));
+[$subject, $text, $html] = confirmation($name, $siteUrl, $c['contact_phone'] ?? '+91 98809 05511');
+$emailed = send_mail($c, $email, $subject, $text, $html);
 
 $fields = array_filter([
   'Name' => $name, 'Phone' => $phone, 'Email' => $email, 'Stage' => $stage, 'Lead type' => $type,

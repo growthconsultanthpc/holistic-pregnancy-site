@@ -36,7 +36,7 @@ def between(h, a, b, new, label):
     return h[:i] + new + h[j:]
 
 CHECKOUT = r"""$('co-s1').addEventListener('submit',function(e){e.preventDefault();var f=e.target,n=f.name.value.trim(),p=f.phone.value.replace(/[^0-9+]/g,''),em=f.email.value.trim(),err='';
-if(n.length<2)err='Please enter your name.';else if(p.replace(/\D/g,'').length<10)err='Please enter a valid WhatsApp number.';else if(em&&!/^\S+@\S+\.\S+$/.test(em))err='Please check your email address.';else if(!f.consent.checked)err='Please tick the box to agree to be contacted.';
+if(n.length<2)err='Please enter your name.';else if(p.replace(/\D/g,'').length<10)err='Please enter a valid WhatsApp number.';else if(!/^\S+@\S+\.\S+$/.test(em))err='Please enter a valid email address.';else if(!f.consent.checked)err='Please tick the box to agree to be contacted.';
 $('co-err1').textContent=err;if(err)return;st.d={name:n,phone:p,email:em,time:f.time?f.time.value:''};var pr=PROGS[st.k],btn=$('co-s1btn'),lab=btn.textContent;btn.disabled=true;btn.textContent='Sending…';
 hpcSend({type:'Enrol',programme:st.k,name:n,phone:p,email:em,call_time:st.d.time,ref_code:f.ref?f.ref.value:'',price:pr.p,form:f}).then(function(r){btn.disabled=false;btn.textContent=lab;
 if(!r.ok){$('co-err1').textContent=r.msg;return}
@@ -53,10 +53,10 @@ if(!r.ok){var er=f.querySelector('.cp-err')||ok;if(ok){ok.textContent=r.msg;ok.s
 if(ok){ok.textContent=ok.dataset.t;ok.style.color='';ok.style.display='block'}if(window.trackLead)trackLead()})},true)});"""
 
 CPFORM = r"""document.getElementById('cp-form').addEventListener('submit',function(e){e.preventDefault();e.stopPropagation();var f=e.target,n=f.name.value.trim(),p=f.phone.value.replace(/[^0-9+]/g,''),er=f.querySelector('.cp-err');
- if(n.length<2){er.textContent='Please enter your name.';return}if(p.replace(/\D/g,'').length<10){er.textContent='Please enter a valid WhatsApp number.';return}if(!f.consent.checked){er.textContent='Please tick the box to agree to be contacted.';return}er.textContent='';
+ var em=f.email.value.trim();if(n.length<2){er.textContent='Please enter your name.';return}if(p.replace(/\D/g,'').length<10){er.textContent='Please enter a valid WhatsApp number.';return}if(!/^\S+@\S+\.\S+$/.test(em)){er.textContent='Please enter a valid email address.';return}if(!f.consent.checked){er.textContent='Please tick the box to agree to be contacted.';return}er.textContent='';
  var b=f.querySelector('button[type=submit]');b.disabled=true;
- hpcSend({type:'Contact',name:n,phone:p,question:'Offer enquiry. Interested in: '+f.prog.value,form:f}).then(function(r){b.disabled=false;if(!r.ok){er.textContent=r.msg;return}if(window.trackLead)trackLead();
- f.innerHTML='<h3 style="margin:0 0 6px">Thank you, '+n.split(' ')[0].replace(/[<&>"]/g,'')+'!</h3><p style="margin:0;color:var(--muted)">Our team will call you within one working day.</p>'})});"""
+ hpcSend({type:'Contact',name:n,phone:p,email:em,question:'Offer enquiry. Interested in: '+f.prog.value,form:f}).then(function(r){b.disabled=false;if(!r.ok){er.textContent=r.msg;return}if(window.trackLead)trackLead();
+ f.innerHTML='<h3 style="margin:0 0 6px">Thank you, '+n.split(' ')[0].replace(/[<&>"]/g,'')+'!</h3><p style="margin:0;color:var(--muted)">Thanks for submitting your info. We will get back to you shortly.</p>'})});"""
 
 REFCODE = r"""er.textContent='';var b=fm.querySelector('button[type=submit]');b.disabled=true;enr=fm.enr.value==='y';
  document.getElementById('rf-yours').innerHTML=enr?'When a friend enrolls, you get <b>'+RW+' off</b> your course.':'When a friend enrolls, you get <b>'+GIFT+'</b>.';
@@ -99,6 +99,17 @@ def patch(h, route):
     h = h.replace('<p class="co-err" id="co-err1"', box + '<p class="co-err" id="co-err1"')
     h = h.replace('''<button class="btn p" type="submit" style="width:100%">Request a call back</button>''', box + '''<button class="btn p" type="submit" style="width:100%">Request a call back</button>''')
     h = h.replace('<form class="form fs-form"><label>Name', '<form class="form fs-form"><label>Name')  # home form keeps its own markup
+    # ---- 4b. one thank-you line for every lead form, and an email box on every form (everyone gets a confirmation email)
+    THANKS = 'Thanks for submitting your info. We will get back to you shortly.'
+    h = re.sub(r'(<p class="ok" role="status">)[^<]*(</p>)', r'\g<1>' + THANKS + r'\g<2>', h)
+    em = '<label class="f">Email<input name="email" type="email" required autocomplete="email" placeholder="you@example.com"></label>'
+    h = h.replace('<label>Phone / WhatsApp<input name="phone" type="tel" required autocomplete="tel" placeholder="+91"></label>', '<label>Phone / WhatsApp<input name="phone" type="tel" required autocomplete="tel" placeholder="+91"></label>' + em)   # home free-session form
+    h = h.replace('<label>Phone / WhatsApp<input name="phone" type="tel" placeholder="+91" required></label><label class="f">Email (optional)', '<label>Phone / WhatsApp<input name="phone" type="tel" placeholder="+91" required></label><label class="f">Email (optional)')
+    h = h.replace('<label class="f">Email (optional)<input name="email" type="email" placeholder="you@example.com"></label>', em)                                   # contact form
+    h = h.replace('<label>Phone / WhatsApp<input name="phone" type="tel" placeholder="+91" required></label><label class="f">Stage', '<label>Phone / WhatsApp<input name="phone" type="tel" placeholder="+91" required></label>' + em + '<label class="f">Stage')  # free-session page
+    h = h.replace('<label>WhatsApp number<input name="phone" type="tel" autocomplete="tel" placeholder="+91" required></label>\n  <label>Joining as', '<label>WhatsApp number<input name="phone" type="tel" autocomplete="tel" placeholder="+91" required></label>\n  ' + em + '\n  <label>Joining as')  # conscious conception form
+    h = h.replace('<label>WhatsApp number<input name="phone" type="tel" required autocomplete="tel"></label><label>Interested in', '<label>WhatsApp number<input name="phone" type="tel" required autocomplete="tel"></label>' + em + '<label>Interested in')  # offer call-back
+    h = h.replace('<label>Email (optional)<input name="email" type="email" autocomplete="email" placeholder="you@example.com"></label>', '<label>Email<input name="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>')  # checkout
     # ---- 5. footer: real legal links, blog link token
     h = must(h, 'Privacy Policy · Terms · Refund Policy · Medical Disclaimer', '<a href="/privacy/">Privacy Policy</a> · <a href="/terms/">Terms</a> · <a href="/refund/">Refund Policy</a> · <a href="/medical-disclaimer/">Medical Disclaimer</a>', 'footer legal')
     h = must(h, '<a href="https://geethabafna.com" target="_blank" rel="noopener">Blog</a>', '@@BLOGLINK@@', 'blog link')
