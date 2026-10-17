@@ -50,7 +50,7 @@ if(btn){btn.disabled=true;btn.textContent='Sending…'}
 hpcSend({type:type,programme:isCC?'preconception':'',name:g('name'),phone:g('phone'),email:g('email'),stage:g('stage'),question:g('q')||(isCC?'Joining as: '+g('joining'):''),call_time:g('time'),form:f}).then(function(r){
 if(btn){btn.disabled=false;btn.textContent=lab}
 if(!r.ok){var er=f.querySelector('.cp-err')||ok;if(ok){ok.textContent=r.msg;ok.style.display='block';ok.style.color='#c0392b'}return}
-if(ok){ok.textContent=ok.dataset.t;ok.style.color='';ok.style.display='block'}if(window.trackLead)trackLead()})},true)});"""
+if(ok){Array.prototype.forEach.call(f.children,function(c){if(c!==ok)c.style.setProperty('display','none','important')});ok.textContent=ok.dataset.t;ok.style.cssText='display:block;grid-column:1/-1;text-align:center;padding:36px 8px;font:600 22px/1.4 Playfair Display,serif;color:var(--ink)';if(f.getBoundingClientRect().top<0)f.scrollIntoView({behavior:'smooth',block:'center'})}if(window.trackLead)trackLead()})},true)});"""
 
 CPFORM = r"""document.getElementById('cp-form').addEventListener('submit',function(e){e.preventDefault();e.stopPropagation();var f=e.target,n=f.name.value.trim(),p=f.phone.value.replace(/[^0-9+]/g,''),er=f.querySelector('.cp-err');
  var em=f.email.value.trim();if(n.length<2){er.textContent='Please enter your name.';return}if(p.replace(/\D/g,'').length<10){er.textContent='Please enter a valid WhatsApp number.';return}if(!/^\S+@\S+\.\S+$/.test(em)){er.textContent='Please enter a valid email address.';return}if(!f.consent.checked){er.textContent='Please tick the box to agree to be contacted.';return}er.textContent='';
