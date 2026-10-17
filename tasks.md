@@ -11,7 +11,7 @@ Legend: `[ ]` todo · `[~]` in progress · `[!]` blocked (needs input, see PRD �
 - [x] Legal (4), blog (off by default, redesigned), 404 now use V4's header/footer/styles
 - [!] **Anand (live server):** add to Hostinger `hpc-config.php`: `'airtable_ref_base_id' => '<same base id>'`, `'airtable_ref_table' => 'Referrals'`, `'airtable_v3_fields' => true`. Then merge `v3-design` → `main`, rotate the exposed Airtable/Resend keys
 - [!] **Sanity webhook → GitHub rebuild** still open: only the next session and "spots left" are live; every other Studio edit needs a rebuild (nightly or webhook)
-- [ ] Ask client: referral reward terms (Terms clause is Draft), offer end date/code, five testimonials' permission, Post-Partum copy, mantra recordings licence, ad IDs
+- [!] Legal pages now carry the client's PDFs (G52). Ask client to confirm: policies mention a payment gateway / checkout box / recordings but we take no online payment; add a referral-reward clause; Terms say live sessions are in English offer end date/code, five testimonials' permission, Post-Partum copy, mantra recordings licence, ad IDs
 - [ ] Cleanup: `src/_old/`, `src/components/`, `src/layouts/`, `src/styles/`, `src/tokens/` are unused by V4 (a hook blocks deleting); remove when allowed
 - [ ] Accessibility polish on V4 (89-91): contrast of a few small texts, aria-hidden ticker copy, footer heading order
 - [ ] When the client sends V5: re-run `python3 scripts/prepare-v4.py` after replacing `V4_HPCWebsite/`; it stops if a patch no longer matches
