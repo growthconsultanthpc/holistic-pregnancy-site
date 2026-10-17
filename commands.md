@@ -75,6 +75,13 @@ npx sanity exec scripts/migrate-v2.ts --with-user-token             # v2 migrati
 Programme page narrative text lives in `src/client/programs/<slug>.ts` (code), not Sanity.
 Every `npm run build` first runs `scripts/check-names.mjs`: it fails if a Sanity programme name is not in the PHP accepted list (and so not in Airtable).
 
+## Package for Hostinger (upload, no Git)
+```bash
+scripts/package-site.sh https://YOUR-ADDRESS staging      # or: production (indexable, hides dummy content, needs approved legal pages)
+# -> hostinger-upload/ (and hostinger-upload.zip): only the files the host needs; upload the CONTENT into public_html
+```
+Test it before uploading: `HPC_NO_RATELIMIT=1 php -S localhost:8095 -t hostinger-upload` (add `http://localhost:8095` to `allowed_origins` in the local `hpc-config.php`). The address is baked in, so rebuild when the domain changes.
+
 ## V4 pages
 ```bash
 python3 scripts/prepare-v4.py     # V4_HPCWebsite/*  ->  src/v4/*.html (re-run when the client sends a new V4; stops if a patch no longer matches)
