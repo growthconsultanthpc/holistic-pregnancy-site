@@ -65,9 +65,14 @@ if ($refUsed !== '' && ref_ready($c)) {
 $offer = $p('offer_code', 20); $price = $p('price_quoted', 12);
 
 $now = gmdate('c');
-$siteUrl = $c['site_url'] ?? ($origin ?: 'https://' . ($_SERVER['HTTP_HOST'] ?? 'holisticpregnancycourse.com'));
-[$subject, $text, $html] = confirmation($name, $siteUrl, $c['contact_phone'] ?? '+91 98809 05511');
-$emailed = send_mail($c, $email, $subject, $text, $html);
+// Confirmation email is OFF until the client's own sender address is verified in Resend (onboarding@resend.dev only reaches the account owner).
+// To switch on: set 'send_confirmation' => true in hpc-config.php and 'resend_from' to the client's address.
+$emailed = false;
+if (!empty($c['send_confirmation'])) {
+  $siteUrl = $c['site_url'] ?? ($origin ?: 'https://' . ($_SERVER['HTTP_HOST'] ?? 'holisticpregnancycourse.com'));
+  [$subject, $text, $html] = confirmation($name, $siteUrl, $c['contact_phone'] ?? '+91 98809 05511');
+  $emailed = send_mail($c, $email, $subject, $text, $html);
+}
 
 $fields = array_filter([
   'Name' => $name, 'Phone' => $phone, 'Email' => $email, 'Stage' => $stage, 'Lead type' => $type,
