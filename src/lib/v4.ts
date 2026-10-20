@@ -44,12 +44,13 @@ const getData = (() => {
 function configs(d: any) {
   const s = d.settings, o = d.offer ?? {}, pg = d.pages
   const live = d.session && d.session.mode === 'date' && d.session.startsAt && new Date(d.session.startsAt) > new Date()
+  const P = (t = '') => String(t).replaceAll('{pct}', String(o.discountPercent ?? ''))   // {pct} in an offer text becomes the discount number
   const hl = o.pageTitleHighlight && o.pageTitle?.includes(o.pageTitleHighlight)
   const headline = esc(o.pageTitle ?? '').replace(/^A /, 'A&nbsp;').replace(esc(o.pageTitleHighlight ?? '\u0000'), hl ? `<em>${esc(o.pageTitleHighlight)}</em>` : '')
   return {
-    CAMPAIGN: { on: !!o.enabled, name: 'Limited-Time Offer', code: o.code ?? '', starts: o.startsAt ?? '', ends: o.endsAt ?? '', headline, subhead: o.barText ?? '', sub: o.pageIntro ?? '',
-      spotsTotal: o.spotsTotal ?? 0, spotsLeft: o.spotsLeft ?? 0, discount: { type: 'percent', value: o.discountPercent ?? 0 }, ticker: o.barText ?? '',
-      popupText: o.popupText ?? o.barText ?? '', popup: o.popup !== false, popupDelay: o.popupDelay ?? 20 },
+    CAMPAIGN: { on: !!o.enabled, name: 'Limited-Time Offer', code: o.code ?? '', starts: o.startsAt ?? '', ends: o.endsAt ?? '', headline, subhead: P(o.barText), sub: P(o.pageIntro),
+      spotsTotal: o.spotsTotal ?? 0, spotsLeft: o.spotsLeft ?? 0, discount: { type: 'percent', value: o.discountPercent ?? 0 }, ticker: P(o.barText),
+      popupText: P(o.popupText ?? o.barText), popup: o.popup !== false, popupDelay: o.popupDelay ?? 20 },
     TESTIMONIALS: { on: d.testimonials.length > 0, samples: false, list: d.testimonials.map((t: any) => ({ name: t.name, detail: t.stage ?? '', program: (t.programmes ?? []).join(','), text: t.quote })) },
     MUSIC: { on: !!s.musicOn && d.mantras.length > 0, label: s.musicLabel ?? 'Garbh Sanskar mantras', tracks: d.mantras.map((m: any) => ({ title: m.title, why: m.why ?? '', sa: m.sanskrit ?? '', ro: m.roman ?? '', mean: m.meaning ?? '', src: m.audioUrl ?? '', yt: m.youtubeId ?? '', short: !!m.isShort, credit: m.credit ?? '' })) },
     SESSIONS: { on: true, samples: false, list: d.sessions.map((x: any) => ({ date: x.date, time: x.time ?? '', type: x.type ?? '', title: x.title, desc: x.desc ?? '', price: x.price ?? 'Free', repeat: x.repeat ?? '' })) },

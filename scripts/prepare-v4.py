@@ -110,6 +110,7 @@ def patch(h, route):
     h = h.replace('<label>WhatsApp number<input name="phone" type="tel" autocomplete="tel" placeholder="+91" required></label>\n  <label>Joining as', '<label>WhatsApp number<input name="phone" type="tel" autocomplete="tel" placeholder="+91" required></label>\n  ' + em + '\n  <label>Joining as')  # conscious conception form
     h = h.replace('<label>WhatsApp number<input name="phone" type="tel" required autocomplete="tel"></label><label>Interested in', '<label>WhatsApp number<input name="phone" type="tel" required autocomplete="tel"></label>' + em + '<label>Interested in')  # offer call-back
     h = h.replace('<label>Email (optional)<input name="email" type="email" autocomplete="email" placeholder="you@example.com"></label>', '<label>Email<input name="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>')  # checkout
+    h = must(h, "<details><summary>What is this offer?</summary><p>25% off any one program", "<details><summary>What is this offer?</summary><p>'+C.discount.value+'% off any one program", 'offer faq percent')
     # ---- 5. footer: real legal links, blog link token
     h = must(h, 'Privacy Policy · Terms · Refund Policy · Medical Disclaimer', '<a href="/privacy/">Privacy Policy</a> · <a href="/terms/">Terms</a> · <a href="/refund/">Refund Policy</a> · <a href="/medical-disclaimer/">Medical Disclaimer</a>', 'footer legal')
     h = must(h, '<a href="https://geethabafna.com" target="_blank" rel="noopener">Blog</a>', '@@BLOGLINK@@', 'blog link')
