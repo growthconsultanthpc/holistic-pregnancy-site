@@ -92,7 +92,7 @@ def patch(h, route):
     h = must(h, "fetch('/session.json?ts='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null})", "fetch(window.HPC_SESSION_URL).then(function(r){return r.ok?r.json():null}).then(window.hpcSession)", 'session fetch')
     h = must(h, "fetch('/offer.json?ts='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null})", "fetch(window.HPC_OFFER_URL).then(function(r){return r.ok?r.json():null}).then(function(j){return j&&j.result})", 'offer fetch')
     # ---- 4. consent boxes where V4 has none (data-protection rule: every lead form)
-    box = '<label class="f cons"><input type="checkbox" name="consent" value="1" required> I agree to be contacted on WhatsApp, phone and email about my request. <a href="/privacy/">Privacy Policy</a></label>'
+    box = '<label class="f cons"><input type="checkbox" name="consent" value="1" required> <span>I agree to be contacted on WhatsApp, phone and email about my request. <a href="/privacy/">Privacy Policy</a></span></label>'
     h = h.replace('<label class="f cons"><input type="checkbox" required> I agree to be contacted on WhatsApp and email about this session. <a href="/">Privacy Policy</a></label>', box)
     h = h.replace('<label class="cons"><input type="checkbox" required> I agree to be contacted on WhatsApp about this session.</label>', box.replace('class="f cons"', 'class="cons"'))
     h = h.replace('<button class="btn p f" type="submit">Reserve My Free Spot</button>', box + '<button class="btn p f" type="submit">Reserve My Free Spot</button>')
