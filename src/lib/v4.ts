@@ -82,7 +82,7 @@ window.hpcSend=function(o){
  var fd=new FormData();
  var put=function(k,v){if(v!==undefined&&v!==null&&String(v)!=='')fd.append(k,v)};
  put('type',o.type);put('programme',o.programme);put('name',o.name);put('phone',o.phone);put('email',o.email);put('stage',STAGE[o.stage]||o.stage);put('question',o.question);put('call_time',TIME(o.call_time));
- put('consent','1');put('ref_code',ref);put('offer_code',act?C.code:'');put('price_quoted',o.price||'');
+ put('form_name',o.formName);put('consent','1');put('ref_code',ref);put('offer_code',act?C.code:'');put('price_quoted',o.price||'');
  for(var k in a)put(k,a[k]);fd.append('website','');
  return fetch(window.HPC_LEAD_ENDPOINT,{method:'POST',body:fd}).then(function(r){return r.json().catch(function(){return{}}).then(function(j){
   if(r.ok&&j.ok)return{ok:true};

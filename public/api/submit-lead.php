@@ -62,7 +62,7 @@ $refUsed = strtoupper($p('ref_code', 20)); $referrer = ''; $refRec = null;
 if ($refUsed !== '' && ref_ready($c)) {
   try { $r = $refRec = ref_find($c, 'Code', $refUsed); $referrer = $r ? (string) ($r['fields']['Name'] ?? '') : ''; if (!$r) $refUsed = ''; } catch (Throwable $e) { $referrer = ''; }
 } elseif ($refUsed !== '' && !preg_match('/^[A-Z]{1,5}-[A-Z2-9]{4}$/', $refUsed)) $refUsed = '';
-$offer = $p('offer_code', 20); $price = $p('price_quoted', 12);
+$formName = $p('form_name', 80); $offer = $p('offer_code', 20); $price = $p('price_quoted', 12);
 
 $now = gmdate('c');
 // Confirmation email is OFF until the client's own sender address is verified in Resend (onboarding@resend.dev only reaches the account owner).
@@ -84,8 +84,8 @@ $fields = array_filter([
 ], fn($v) => $v !== '' && $v !== null);
 $fields['Confirmation email sent'] = $emailed;
 // Only written once the four v3 columns exist in Airtable (set 'airtable_v3_fields' => true in hpc-config.php).
-if (!empty($c['airtable_v3_fields'])) $fields += array_filter(['Referral code used' => $refUsed, 'Referred by' => $referrer, 'Offer applied' => $offer, 'Price quoted' => $price], fn($v) => $v !== '');
-$log = gmdate('Y-m-d H:i') . " UTC · $type" . ($prog ? " · $prog" : '') . ' · ' . ($p('utm_source', 100) ?: 'direct');
+if (!empty($c['airtable_v3_fields'])) $fields += array_filter(['Form' => $formName, 'Referral code used' => $refUsed, 'Referred by' => $referrer, 'Offer applied' => $offer, 'Price quoted' => $price], fn($v) => $v !== '');
+$log = gmdate('Y-m-d H:i') . " UTC · $type" . ($formName ? " · $formName" : '') . ($prog ? " · $prog" : '') . ' · ' . ($p('utm_source', 100) ?: 'direct');
 
 try {
   $saved = at_save_lead($c, $fields, $log);

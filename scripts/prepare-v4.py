@@ -38,16 +38,17 @@ def between(h, a, b, new, label):
 CHECKOUT = r"""$('co-s1').addEventListener('submit',function(e){e.preventDefault();var f=e.target,n=f.name.value.trim(),p=f.phone.value.replace(/[^0-9+]/g,''),em=f.email.value.trim(),err='';
 if(n.length<2)err='Please enter your name.';else if(p.replace(/\D/g,'').length<10)err='Please enter a valid WhatsApp number.';else if(!/^\S+@\S+\.\S+$/.test(em))err='Please enter a valid email address.';else if(!f.consent.checked)err='Please tick the box to agree to be contacted.';
 $('co-err1').textContent=err;if(err)return;st.d={name:n,phone:p,email:em,time:f.time?f.time.value:''};var pr=PROGS[st.k],btn=$('co-s1btn'),lab=btn.textContent;btn.disabled=true;btn.textContent='Sending…';
-hpcSend({type:'Enrol',programme:st.k,name:n,phone:p,email:em,call_time:st.d.time,ref_code:f.ref?f.ref.value:'',price:pr.p,form:f}).then(function(r){btn.disabled=false;btn.textContent=lab;
+hpcSend({type:'Enrol',formName:'Enrol: '+pr.n,programme:st.k,name:n,phone:p,email:em,call_time:st.d.time,ref_code:f.ref?f.ref.value:'',price:pr.p,form:f}).then(function(r){btn.disabled=false;btn.textContent=lab;
 if(!r.ok){$('co-err1').textContent=r.msg;return}
 $('co-fn').textContent=n.split(' ')[0];$('co-dn').textContent=pr.n;step(4);document.querySelectorAll('.co-steps li').forEach(function(li){var k=+li.dataset.s;li.classList.toggle('done',k===1);li.classList.toggle('on',k===2)})})});"""
 
-GENERIC = r"""document.querySelectorAll('form.form').forEach(function(f){f.addEventListener('submit',function(e){e.preventDefault();
+GENERIC = r"""document.querySelectorAll('form.form').forEach(function(f){f.addEventListener('submit',function(e){e.preventDefault();e.stopImmediatePropagation();
 var pg=(f.closest('.pg')||{}).id||'',ok=f.querySelector('.ok'),btn=f.querySelector('button[type=submit]'),lab=btn&&btn.textContent,g=function(n){var i=f.elements.namedItem(n);return i?i.value.trim():''};
 if(ok&&!ok.dataset.t)ok.dataset.t=ok.textContent;var cons=f.elements.namedItem('consent');if(cons&&!cons.checked){f.reportValidity&&f.reportValidity();return}
-var isCC=f.classList.contains('cc-form'),isFS=f.classList.contains('fs-form'),type=isCC||isFS?'Free session':'Contact';
+var isCC=f.classList.contains('cc-form'),isFS=f.classList.contains('fs-form'),isPP=f.classList.contains('pp-form'),type=isCC||isFS?'Free session':'Contact';
+var fname=isPP?'Post-partum waitlist':isCC?'Conscious Conception (free session)':isFS?(pg==='p-home'?'Home: free session':'Free session page'):'Contact page: call back';
 if(btn){btn.disabled=true;btn.textContent='Sending…'}
-hpcSend({type:type,programme:isCC?'preconception':'',name:g('name'),phone:g('phone'),email:g('email'),stage:g('stage'),question:g('q')||(isCC?'Joining as: '+g('joining'):''),call_time:g('time'),form:f}).then(function(r){
+hpcSend({type:type,programme:isCC?'preconception':'',name:g('name'),phone:g('phone'),email:g('email'),stage:g('stage'),question:isPP?'Post-partum waitlist. Where: '+g('where'):g('q')||(isCC?'Joining as: '+g('joining'):''),formName:fname,call_time:g('time'),form:f}).then(function(r){
 if(btn){btn.disabled=false;btn.textContent=lab}
 if(!r.ok){var er=f.querySelector('.cp-err')||ok;if(ok){ok.textContent=r.msg;ok.style.display='block';ok.style.color='#c0392b'}return}
 if(ok){Array.prototype.forEach.call(f.children,function(c){if(c!==ok)c.style.setProperty('display','none','important')});ok.textContent=ok.dataset.t;ok.style.cssText='display:block;grid-column:1/-1;text-align:center;padding:36px 8px;font:600 22px/1.4 Playfair Display,serif;color:var(--ink)';if(f.getBoundingClientRect().top<0)f.scrollIntoView({behavior:'smooth',block:'center'})}if(window.trackLead)trackLead()})},true)});"""
@@ -55,7 +56,7 @@ if(ok){Array.prototype.forEach.call(f.children,function(c){if(c!==ok)c.style.set
 CPFORM = r"""document.getElementById('cp-form').addEventListener('submit',function(e){e.preventDefault();e.stopPropagation();var f=e.target,n=f.name.value.trim(),p=f.phone.value.replace(/[^0-9+]/g,''),er=f.querySelector('.cp-err');
  var em=f.email.value.trim();if(n.length<2){er.textContent='Please enter your name.';return}if(p.replace(/\D/g,'').length<10){er.textContent='Please enter a valid WhatsApp number.';return}if(!/^\S+@\S+\.\S+$/.test(em)){er.textContent='Please enter a valid email address.';return}if(!f.consent.checked){er.textContent='Please tick the box to agree to be contacted.';return}er.textContent='';
  var b=f.querySelector('button[type=submit]');b.disabled=true;
- hpcSend({type:'Contact',name:n,phone:p,email:em,question:'Offer enquiry. Interested in: '+f.prog.value,form:f}).then(function(r){b.disabled=false;if(!r.ok){er.textContent=r.msg;return}if(window.trackLead)trackLead();
+ hpcSend({type:'Contact',formName:'Offer page: call back',name:n,phone:p,email:em,question:'Offer enquiry. Interested in: '+f.prog.value,form:f}).then(function(r){b.disabled=false;if(!r.ok){er.textContent=r.msg;return}if(window.trackLead)trackLead();
  f.innerHTML='<h3 style="margin:0 0 6px">Thank you, '+n.split(' ')[0].replace(/[<&>"]/g,'')+'!</h3><p style="margin:0;color:var(--muted)">Thanks for submitting your info. We will get back to you shortly.</p>'})});"""
 
 REFCODE = r"""er.textContent='';var b=fm.querySelector('button[type=submit]');b.disabled=true;enr=fm.enr.value==='y';
@@ -111,6 +112,12 @@ def patch(h, route):
     h = h.replace('<label>WhatsApp number<input name="phone" type="tel" required autocomplete="tel"></label><label>Interested in', '<label>WhatsApp number<input name="phone" type="tel" required autocomplete="tel"></label>' + em + '<label>Interested in')  # offer call-back
     h = h.replace('<label>Email (optional)<input name="email" type="email" autocomplete="email" placeholder="you@example.com"></label>', '<label>Email<input name="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>')  # checkout
     h = must(h, "<details><summary>What is this offer?</summary><p>25% off any one program", "<details><summary>What is this offer?</summary><p>'+C.discount.value+'% off any one program", 'offer faq percent')
+    h = h.replace('<label>Where are you right now?<select name="stage" required>', em + '<label>Where are you right now?<select name="where" required>')   # post-partum waitlist: email box; the answer is a note, not the Stage list
+    h = h.replace('<label class="cons"><input type="checkbox" required> I agree to be contacted on WhatsApp about this program.</label>', box.replace('class="f cons"', 'class="cons"'))
+    for _ in range(3): h = h.replace(box + box, box).replace(box.replace('class="f cons"', 'class="cons"') * 2, box.replace('class="f cons"', 'class="cons"'))   # never two consent boxes in one form
+    # referral form: consent tick (its answer used to be sent without asking)
+    h = h.replace('<button class="btn p" type="submit">Get my referral code</button>', box.replace('class="f cons"', 'class="cons"') + '<button class="btn p" type="submit">Get my referral code</button>')
+    h = h.replace("if(!fm.enr.value){er.textContent='Please tell us if you are in a program.';return}", "if(!fm.enr.value){er.textContent='Please tell us if you are in a program.';return}if(!fm.consent.checked){er.textContent='Please tick the box to agree to be contacted.';return}")
     # ---- 5. footer: real legal links, blog link token
     h = must(h, 'Privacy Policy · Terms · Refund Policy · Medical Disclaimer', '<a href="/privacy/">Privacy Policy</a> · <a href="/terms/">Terms</a> · <a href="/refund/">Refund Policy</a> · <a href="/medical-disclaimer/">Medical Disclaimer</a>', 'footer legal')
     h = must(h, '<a href="https://geethabafna.com" target="_blank" rel="noopener">Blog</a>', '@@BLOGLINK@@', 'blog link')
