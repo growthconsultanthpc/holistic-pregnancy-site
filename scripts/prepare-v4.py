@@ -40,6 +40,7 @@ if(n.length<2)err='Please enter your name.';else if(p.replace(/\D/g,'').length<1
 $('co-err1').textContent=err;if(err)return;st.d={name:n,phone:p,email:em,time:f.time?f.time.value:''};var pr=PROGS[st.k],btn=$('co-s1btn'),lab=btn.textContent;btn.disabled=true;btn.textContent='Sending…';
 hpcSend({type:'Enrol',formName:'Enrol: '+pr.n,programme:st.k,name:n,phone:p,email:em,call_time:st.d.time,ref_code:f.ref?f.ref.value:'',price:pr.p,form:f}).then(function(r){btn.disabled=false;btn.textContent=lab;
 if(!r.ok){$('co-err1').textContent=r.msg;return}
+if(window.trackLead)trackLead();
 $('co-fn').textContent=n.split(' ')[0];$('co-dn').textContent=pr.n;step(4);document.querySelectorAll('.co-steps li').forEach(function(li){var k=+li.dataset.s;li.classList.toggle('done',k===1);li.classList.toggle('on',k===2)})})});"""
 
 GENERIC = r"""document.querySelectorAll('form.form').forEach(function(f){f.addEventListener('submit',function(e){e.preventDefault();e.stopImmediatePropagation();
